@@ -1,0 +1,2 @@
+﻿**/Nuke-Fusion.nuspec|Nuspec
+**/Nuke-Fusion.nuspec|TextFile
