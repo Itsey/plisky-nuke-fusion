@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Nuke-Fusion.Build": {
+      "commandName": "Project",
+      "commandLineArgs": "Compile"
+    }
+  }
+}

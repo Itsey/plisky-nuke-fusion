@@ -17,6 +17,6 @@
   </metadata>
   <files>
     <file src=".\nuget\readme.md" />
-    <file src=".\publish\pnf\*.*" target="lib\net8.0\" />
+    <file src=".\publish\pnf\*.*" target="lib\net9.0\" />
   </files>
 </package>

@@ -1,16 +1,13 @@
 ﻿using Nuke.Common.Tooling;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Plisky.Nuke.Fusion;
 
 [Serializable]
-public class VersonifySettings : ToolSettings {
-    public override Action<OutputType, string> ProcessLogger => base.ProcessLogger ?? ProcessTasks.DefaultLogger;
-    public override Action<ToolSettings, IProcess> ProcessExitHandler => base.ProcessExitHandler ?? ProcessTasks.DefaultExitHandler;
+public class VersonifySettings : ToolOptions {
+
+
+
+
 
     public string TraceConfiguration { get; set; } = string.Empty;
 
@@ -48,7 +45,7 @@ public class VersonifySettings : ToolSettings {
     /// Corresponds to -Release in the Versonify tool.
     /// </summary>
     public string Release { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Corresponds to -Root in the Versonify tool.
     /// </summary>
@@ -72,18 +69,51 @@ public class VersonifySettings : ToolSettings {
 
     }
 
-    public override string ProcessToolPath => GetPath();
+    //public override string ProcessToolPath => GetPath();
 
     public bool DryRun { get; set; }
 
-    private string GetPath() {
+    public string GetPath() {
         return NuGetToolPathResolver.GetPackageExecutable(
           packageId: "Plisky.Versonify",
           packageExecutable: "Versonify.exe",
           framework: null);
     }
 
+    public ArgumentStringHandler GetArgsString() {
+        var result = new ArgumentStringHandler();
+        result.AppendLiteral(Command);
+        result.AppendLiteral($" -vs={VersionPersistanceValue}");
+        result.AppendLiteral($" -Root={Root}");
 
+        if (!string.IsNullOrEmpty(QuickValue)) {
+            result.AppendLiteral($" -Q={QuickValue}");
+        }
+
+        if (!string.IsNullOrEmpty(MultiMatchFile)) {
+            result.AppendLiteral($" -mm={MultiMatchFile}");
+        }
+
+        if (Debug) {
+            result.AppendLiteral(" -Debug");
+        }
+
+        if (DryRun) {
+            result.AppendLiteral(" -DryRun");
+        }
+
+        if (PerformIncrement) {
+            result.AppendLiteral(" -Increment");
+        }
+
+        if (!string.IsNullOrEmpty(TraceConfiguration)) {
+            result.AppendLiteral($" -Trace={TraceConfiguration}");
+        }
+        return result;
+    }
+
+
+#if false
     protected override Arguments ConfigureProcessArguments(Arguments arguments) {
         arguments
           .Add(Command)
@@ -116,4 +146,5 @@ public class VersonifySettings : ToolSettings {
 
         return base.ConfigureProcessArguments(arguments);
     }
+#endif
 }

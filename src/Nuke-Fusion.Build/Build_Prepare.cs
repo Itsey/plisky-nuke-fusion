@@ -1,16 +1,11 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Nuke.Common;
+﻿using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Tools.DotNet;
 using Plisky.Nuke.Fusion;
+using Serilog;
 
 public partial class Build : NukeBuild {
-    Target Clean => _ => _
+    public Target Clean => _ => _
      .DependsOn(Initialise)
      .Before(Prepare)
      .Executes(() => {
@@ -22,15 +17,17 @@ public partial class Build : NukeBuild {
      });
 
 
-    Target MollyCheck => _ => _
+    public Target MollyCheck => _ => _
        .DependsOn(Initialise)
        .Before(Prepare)
        .After(Clean)
        .Executes(() => {
 
-           Logger.Info("Mollycoddle Structure Linting.");
+           Log.Information("Mollycoddle Structure Linting.");
 
-           MollycoddleTasks.PerformScan(s => s
+           var mct = new MollycoddleTasks();
+
+           mct.PerformScan(s => s
                .AddRuleHelp(true)
                .SetRulesFile(@"C:\files\code\git\mollycoddle\src\_Dependencies\RulesFiles\XXVERSIONNAMEXX\defaultrules.mollyset")
                .SetPrimaryRoot(@"C:\Files\OneDrive\Dev\PrimaryFiles")

@@ -2,20 +2,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using global::Nuke.Common.Tooling;
-using Octokit;
 
 
 
 
 
-public static class VersonifyTasks {
+public class VersonifyTasks : ToolTasks, IRequirePathTool {
 
-    public static IReadOnlyCollection<Output> PerformFileUpdate(Configure<VersonifySettings> configure) {
+    public static IReadOnlyCollection<Output> Versonify(ArgumentStringHandler arguments, string workingDirectory = null, IReadOnlyDictionary<string, string> environmentVariables = null, int? timeout = null, bool? logOutput = null, bool? logInvocation = null, Action<OutputType, string> logger = null, Func<IProcess, object> exitHandler = null)
+        => new VersonifyTasks().Run(arguments, workingDirectory, environmentVariables, timeout, logOutput, logInvocation, logger, exitHandler);
+
+    public IReadOnlyCollection<Output> PerformFileUpdate(Configure<VersonifySettings> configure) {
 
         if (configure == null) {
             throw new InvalidOperationException();
@@ -24,31 +22,45 @@ public static class VersonifyTasks {
         return PerformFileUpdate(configure(new VersonifySettings()));
     }
 
-    public static IReadOnlyCollection<Output> PerformFileUpdate(VersonifySettings settings) {
+    public IReadOnlyCollection<Output> PerformFileUpdate(VersonifySettings settings) {
         settings = settings ?? new VersonifySettings();
         settings.SetCommand(VersonifyCommand.UpdateFiles);
         settings.PerformIncrement = true;
-        using var process = ProcessTasks.StartProcess(settings);
-        settings.ProcessExitHandler.Invoke(settings, process.AssertWaitForExit());
-        return process.Output;
+
+
+
+        string tpth = settings.GetPath();
+        SetToolPath(tpth);
+
+        var result = Run(settings.GetArgsString());
+        return result;
+        /*using var process = ProcessTasks.StartProcess(settings);
+        settings.ProcessExitHandler.Invoke(settings, process.AssertWaitForExit());*/
+
     }
 
-    public static IReadOnlyCollection<Output> PassiveExecute(Configure<VersonifySettings> configure) {
+    public IReadOnlyCollection<Output> PassiveExecute(Configure<VersonifySettings> configure) {
         if (configure == null) {
             throw new InvalidOperationException();
         }
         return PassiveExecute(configure(new VersonifySettings()));
     }
 
-    private static IReadOnlyCollection<Output> PassiveExecute(VersonifySettings settings) {
+    private IReadOnlyCollection<Output> PassiveExecute(VersonifySettings settings) {
         settings = settings ?? new VersonifySettings();
+
+        string tpth = settings.GetPath();
+        SetToolPath(tpth);
 
         settings.SetCommand(VersonifyCommand.Passive);
 
-        using var process = ProcessTasks.StartProcess(settings);
+        var result = Run(settings.GetArgsString());
+        return result;
+
+        /*using var process = ProcessTasks.StartProcess(settings);
         settings.ProcessExitHandler.Invoke(settings, process.AssertWaitForExit());
         var output = process.Output;
 
-        return output;
+        return output;*/
     }
 }

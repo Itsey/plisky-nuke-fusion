@@ -1,0 +1,7 @@
+﻿**/plisky-nuke-fusion/src_TestSolution/**/NukeTestSolution.csproj|StdAssembly
+**/plisky-nuke-fusion/src_TestSolution/**/NukeTestSolution.csproj|StdInformational
+**/plisky-nuke-fusion/src_TestSolution/**/NukeTestSolution.csproj|StdFile
+**/plisky-nuke-fusion/src_TestSolution/**/ConsumedModule.csproj|StdAssembly
+**/plisky-nuke-fusion/src_TestSolution/**/ConsumedModule.csproj|StdInformational
+**/plisky-nuke-fusion/src_TestSolution/**/ConsumedModule.csproj|StdFile
+

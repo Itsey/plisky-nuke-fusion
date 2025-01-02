@@ -1,0 +1,9 @@
+{
+  "projectPath": ".",
+  "containerImageTags": [
+    "1.0n"
+  ],
+  "containerBuilder": "docker",
+  "outputFormat": "kustomize",
+  "disableSecrets": true
+}

@@ -1,80 +1,37 @@
-using System;
+﻿using System;
 using System.Linq;
 using Nuke.Common;
-using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Tools.Docker;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.NuGet;
 using Plisky.Nuke.Fusion;
 using Serilog;
 
 public partial class Build : NukeBuild {
+    public Target ReleaseUpdatedNukeFusion => _ => _
+     .DependsOn(Initialise)
+     .Before(Prepare)
+     .Triggers(PnfVersion, PnfCompile, PnfPublish)
+     .Executes(() => {
 
 
-    public static int Main() => Execute<Build>(x => x.Compile);
+         var ap = RootDirectory / "Plisky.Nuke.Fusion.sln";
+         Solution = ap.ReadSolution();
 
-    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+         //ap = ap / "NukeTestSolution.sln";
 
-    [GitRepository]
-    readonly GitRepository GitRepository;
+         DotNetTasks.DotNetClean(s => s
+          .SetProject(Solution));
 
-    [Solution]
-    Solution Solution;
+         settings.ArtifactsDirectory.CreateOrCleanDirectory();
+         settings.MainProjectName = "Plisky.Nuke.Fusion";
 
-    LocalBuildConfig settings;
+     });
 
-
-    AbsolutePath SourceDirectory => RootDirectory / "src";
-    //AbsolutePath ArtifactsDirectory => Path.GetTempPath() + "\\artifacts";
-
-
-    Target Initialise => _ => _
-      .Executes(() => {
-
-          var ap = RootDirectory.Parent / "src_TestSolution"; // / "src_TestSolution/NukeTestSolution.sln";
-          //ap = ap / "src_TestSolution";
-          ap = ap / "NukeTestSolution.sln";
-
-          Solution = ap.ReadSolution();
-
-
-          settings = new LocalBuildConfig();
-          settings.NotifyWebhookUrl = "https://discord.com/api/webhooks/1323758419500339261/lVkTpOPOWBNp15KVOD_yBWVbiBlzQvjShGJdhHIP1W1Vm9A5lLk7pM1EHvYyjijuJwJQ";
-          settings.ArtifactsDirectory = @"D:\Scratch\_build\vsfbld\";
-          settings.NonDestructive = true;
-          settings.VersioningPersistanceToken = @"D:\Scratch\_build\vstore\pnf-testsln-version.vstore";
-          settings.MainProjectName = "NukeTestSolution";
-
-
-          var d = new DiscordTasks();
-          var ds = new DiscordSettings();
-          ds.WebHookUrl = settings.NotifyWebhookUrl;
-          d.SendNotification(ds, "Build Started");
-
-
-          if (settings.NonDestructive) {
-              Log.Information("Initialised - In Non Destructive Mode.");
-          }
-          else {
-              Log.Information("Initialised - In Destructive Mode.");
-          }
-
-      });
-
-
-    public Target Prepare => _ => _
-       .Executes(() => {
-       });
-
-
-    #region Build Related Targets
-    Target VersionSource => _ => _
-       .DependsOn(Initialise)
-       .Before(Compile)
-       .After(Clean)
+    Target PnfVersion => _ => _
+       .DependsOn(Initialise, ReleaseUpdatedNukeFusion)
+       .Before(PnfCompile)
        .Executes(() => {
 
            if (settings == null) {
@@ -105,17 +62,10 @@ public partial class Build : NukeBuild {
        });
 
 
-    #endregion
 
-
-    Target Restore => _ => _
-        .Executes(() => {
-        });
-
-
-    public Target Compile => _ => _
-        .Triggers(UnitTest)
-        .DependsOn(Initialise, VersionSource, Clean)
+    public Target PnfCompile => _ => _
+        .DependsOn(Initialise, PnfVersion)
+        .Triggers(PnfUnitTest)
         .Executes(() => {
 
             DotNetTasks.DotNetBuild(s => s
@@ -128,10 +78,8 @@ public partial class Build : NukeBuild {
 
 
 
-    Target UnitTest => _ => _
-       .After(Compile)
-       .Before(Release)
-       .DependsOn(Compile)
+    Target PnfUnitTest => _ => _
+       .DependsOn(PnfCompile)
        .Executes(() => {
            var testProjects = Solution.GetAllProjects("*.Test");
            if (testProjects.Any()) {
@@ -144,9 +92,10 @@ public partial class Build : NukeBuild {
 
 
 
-    Target Publish => _ => _
-        .DependsOn(Compile)
-        .After(Validate)
+    Target PnfPublish => _ => _
+        .DependsOn(PnfCompile)
+        .After(PnfUnitTest)
+    .Triggers(PnfBuildNugetPackage)
         .Executes(() => {
 
 
@@ -155,7 +104,10 @@ public partial class Build : NukeBuild {
             if (project == null) { throw new InvalidOperationException($"Publish -> GetProject -> Project {settings.MainProjectName} was not found."); }
 
             var publishDirectory = settings.ArtifactsDirectory + "\\publish\\pnf";
+            publishDirectory.CreateOrCleanDirectory();
+
             var nugetStructure = settings.ArtifactsDirectory + "\\nuget";
+            nugetStructure.CreateOrCleanDirectory();
 
             DotNetTasks.DotNetPublish(s => s
               .SetProject(project)
@@ -166,9 +118,9 @@ public partial class Build : NukeBuild {
             );
 
             var readmeFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\readme.md";
-            var targetdir = nugetStructure + "\\readme.md";
+            var destinationReadmeFile = nugetStructure + "\\readme.md";
 
-            targetdir.Copy(targetdir, ExistsPolicy.FileOverwrite);
+            readmeFile.Copy(destinationReadmeFile, ExistsPolicy.FileOverwrite);
             //FileSystemTasks.CopyFile(readmeFile, , FileExistsPolicy.Overwrite);
 
             var nugetPackageFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\nuke-fusion.nuspec";
@@ -178,8 +130,8 @@ public partial class Build : NukeBuild {
 
         });
 
-    Target BuildNugetPackage => _ => _
-       .DependsOn(Publish)
+    Target PnfBuildNugetPackage => _ => _
+       .DependsOn(PnfPublish)
        .Executes(() => {
 
            var vft = new VersonifyTasks();
@@ -201,8 +153,8 @@ public partial class Build : NukeBuild {
 
        });
 
-    Target ReleaseNugetPackage => _ => _
-     .DependsOn(BuildNugetPackage)
+    public Target PnfReleaseNugetPackage => _ => _
+     .DependsOn(PnfBuildNugetPackage)
      .Executes(() => {
 
          if (settings.NonDestructive) {
@@ -210,7 +162,7 @@ public partial class Build : NukeBuild {
              return;
          }
 
-         throw new NotImplementedException();
+
          NuGetTasks.NuGetPush(s => s
              .SetTargetPath(settings.ArtifactsDirectory + "\\Plisky.Nuke.Fusion*.nupkg")
              .SetSource("https://api.nuget.org/v3/index.json")
@@ -218,19 +170,4 @@ public partial class Build : NukeBuild {
      });
 
 
-
-    Target Validate => _ => _
-       .DependsOn(Initialise)
-       .After(Compile)
-       .Executes(() => {
-           Log.Information("--> Validate <-- ");
-
-       });
-
-    Target Release => _ => _
-       .DependsOn(ReleaseNugetPackage)
-       .After(Validate)
-       .Executes(() => {
-           Log.Information("Release Complete.");
-       });
 }

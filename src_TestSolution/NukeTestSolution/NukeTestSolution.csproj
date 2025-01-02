@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyVersion>0.1</AssemblyVersion>
-    <Version>0.1.9.0</Version>
-    <FileVersion>0.1.9.0</FileVersion>
+    <Version>0.1.8.0</Version>
+    <FileVersion>0.1.8.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Flurl.Http" Version="4.0.2" />
-    <PackageReference Include="Nuke.Common" Version="9.0.3" />
+    <ProjectReference Include="..\ConsumedModule\ConsumedModule.csproj" />
   </ItemGroup>
 </Project>
