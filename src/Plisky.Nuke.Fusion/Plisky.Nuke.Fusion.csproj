@@ -5,8 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyVersion>0.1</AssemblyVersion>
-    <Version>0.1.9.0</Version>
-    <FileVersion>0.1.9.0</FileVersion>
+    <Version>0.1.11.0</Version>
+    <FileVersion>0.1.11.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="4.0.2" />

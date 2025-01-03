@@ -44,7 +44,7 @@ public partial class Build : NukeBuild {
           settings = new LocalBuildConfig();
           settings.NotifyWebhookUrl = "https://discord.com/api/webhooks/1323758419500339261/lVkTpOPOWBNp15KVOD_yBWVbiBlzQvjShGJdhHIP1W1Vm9A5lLk7pM1EHvYyjijuJwJQ";
           settings.ArtifactsDirectory = @"D:\Scratch\_build\vsfbld\";
-          settings.NonDestructive = true;
+          settings.NonDestructive = false;
           settings.VersioningPersistanceToken = @"D:\Scratch\_build\vstore\pnf-testsln-version.vstore";
           settings.MainProjectName = "NukeTestSolution";
 
