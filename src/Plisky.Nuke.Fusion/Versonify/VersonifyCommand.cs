@@ -1,4 +1,8 @@
-﻿namespace Plisky.Nuke.Fusion;
+﻿#if VERSONIFY
+namespace Versonify.Temp;
+#else
+namespace Plisky.Nuke.Fusion;
+#endif
 
 /// <summary>
 /// The values for the -Command parameter in the Versonify tool.

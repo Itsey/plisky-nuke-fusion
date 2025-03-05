@@ -89,11 +89,11 @@ public partial class Build : NukeBuild {
 
            var vft = new VersonifyTasks();
 
-           vft.PassiveExecute(s => s
+           vft.PassiveCommand(s => s
              .SetRoot(Solution.Directory)
              .SetVersionPersistanceValue(settings.VersioningPersistanceToken));
 
-           vft.PerformFileUpdate(s => s
+           vft.FileUpdateCommand(s => s
             .SetRoot(Solution.Directory)
             .AddMultimatchFile($"{Solution.Directory}\\_Dependencies\\Automation\\AutoVersion.txt")
             .PerformIncrement(true)
@@ -184,12 +184,12 @@ public partial class Build : NukeBuild {
 
            var vft = new VersonifyTasks();
 
-           vft.PassiveExecute(s => s
+           vft.PassiveCommand(s => s
              .SetRoot(Solution.Directory)
              .SetVersionPersistanceValue(settings.VersioningPersistanceToken)
              .SetDebug(true));
 
-           vft.PerformFileUpdate(s => s
+           vft.FileUpdateCommand(s => s
             .SetRoot(settings.ArtifactsDirectory)
             .AddMultimatchFile($"{Solution.Directory}\\_Dependencies\\Automation\\NuspecVersion.txt")
             .SetVersionPersistanceValue(settings.VersioningPersistanceToken));

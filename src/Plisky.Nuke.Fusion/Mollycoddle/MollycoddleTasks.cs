@@ -20,10 +20,6 @@ public class MollycoddleTasks : ToolTasks {
     public IReadOnlyCollection<Output> PerformScan(MollycoddleSettings settings) {
 
 
-
-        /*settings = settings ?? new MollycoddleSettings();        
-        using var process = ProcessTasks.StartProcess(settings);
-        settings.ProcessExitHandler.Invoke(settings, process.AssertWaitForExit());*/
         string tpth = settings.GetPath();
         SetToolPath(tpth);
         return Run(settings.GetArgsString());  //process.Output;

@@ -35,7 +35,7 @@ public class MollycoddleSettings : ToolOptions {
           framework: null);
     }
 
-#if true
+
     public ArgumentStringHandler GetArgsString() {
         var result = new ArgumentStringHandler();
         result.AppendLiteral($" -dir={Directory}");
@@ -62,44 +62,7 @@ public class MollycoddleSettings : ToolOptions {
         }
         return result;
     }
-#else
-    protected override Arguments ConfigureProcessArguments(Arguments arguments) {
 
-
-        arguments
-          .Add($"-dir={Directory}")
-          .Add($"-rulesFile={RulesFile}")
-          .Add($"-formatter={Formatter}");
-
-
-        if (!string.IsNullOrEmpty(RulesetVersion)) {
-            arguments.Add($"-version={RulesetVersion}");
-        }
-
-        if (!string.IsNullOrEmpty(PrimaryRoot)) {
-            arguments.Add($"-primaryRoot={PrimaryRoot}");
-        }
-
-        if (Debug) {
-            arguments.Add("-Debug=v-**");
-        }
-
-        if (DryRun) {
-            arguments.Add("-WarnOnly");
-        }
-
-        if (Disabled) {
-            arguments.Add("-Disabled");
-        }
-
-        if (!string.IsNullOrEmpty(TraceConfiguration)) {
-            arguments.Add($"-Trace={TraceConfiguration}");
-        }
-
-        return base.ConfigureProcessArguments(arguments);
-    }
-
-#endif
     public MollycoddleSettings() : base() {
         // this.SetProcessToolPath(GetPath());
     }

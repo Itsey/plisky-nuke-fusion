@@ -8,6 +8,12 @@ public static partial class MollycoddleSettingsExtensions {
         return toolSettings;
     }
 
+    public static T SetDebug<T>(this T toolSettings, bool debugValue) where T : MollycoddleSettings {
+        //toolSettings = toolSettings.NewInstance();
+        toolSettings.Debug = debugValue;
+        return toolSettings;
+    }
+
     public static T AsDryRun<T>(this T toolSettings, bool dryRunOnly) where T : MollycoddleSettings {
         //toolSettings = toolSettings.NewInstance();
         toolSettings.DryRun = dryRunOnly;

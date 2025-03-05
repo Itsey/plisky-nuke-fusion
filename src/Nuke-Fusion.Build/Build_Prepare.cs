@@ -29,6 +29,7 @@ public partial class Build : NukeBuild {
 
            mct.PerformScan(s => s
                .AddRuleHelp(true)
+               .SetDebug(true)
                .SetRulesFile(@"C:\files\code\git\mollycoddle\src\_Dependencies\RulesFiles\XXVERSIONNAMEXX\defaultrules.mollyset")
                .SetPrimaryRoot(@"C:\Files\OneDrive\Dev\PrimaryFiles")
                .SetDirectory(GitRepository.LocalDirectory));
