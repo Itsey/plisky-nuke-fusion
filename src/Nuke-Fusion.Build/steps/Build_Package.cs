@@ -1,0 +1,65 @@
+﻿
+using System;
+using Nuke.Common;
+using Nuke.Common.IO;
+using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.NuGet;
+using Serilog;
+
+public partial class Build : NukeBuild {
+
+    // Package Step - Well known step for bundling prior to the app release.   Arrange Construct Examine [Package] Release Test
+
+    private Target PackageStep => _ => _
+        .After(ExamineStep)
+        .Before(ReleaseStep, Wrapup)
+        .DependsOn(Initialise, ExamineStep)
+        .Executes(() => {
+
+            if (Solution == null) {
+                Log.Error("Build>PackageStep>Solution is null.");
+                throw new InvalidOperationException("The solution must be set");
+            }
+
+            if (settings == null) {
+                Log.Error("Build>PackageStep>Settings is null.");
+                throw new InvalidOperationException("The settings must be set");
+            }
+
+
+            var project = Solution.GetProject(settings.MainProjectName);
+
+            if (project == null) { throw new InvalidOperationException($"Publish -> GetProject -> Project {settings.MainProjectName} was not found."); }
+
+            var publishDirectory = settings.ArtifactsDirectory + "\\publish\\pnf";
+            var nugetStructure = settings.ArtifactsDirectory + "\\nuget";
+
+            DotNetTasks.DotNetPublish(s => s
+              .SetProject(project)
+              .SetConfiguration(Configuration)
+              .SetOutput(publishDirectory)
+              .EnableNoRestore()
+              .EnableNoBuild()
+            );
+
+            var readmeFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\readme.md";
+            var targetdir = nugetStructure + "\\readme.md";
+
+            //targetdir.Copy(targetdir, ExistsPolicy.FileOverwrite);
+            readmeFile.Copy(targetdir, ExistsPolicy.FileOverwrite);
+
+            var nugetPackageFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\nuke-fusion.nuspec";
+            var destDir = settings.ArtifactsDirectory + "\\nuke-fusion.nuspec";
+            nugetPackageFile.Copy(destDir, ExistsPolicy.FileOverwrite);
+
+
+
+            NuGetTasks.NuGetPack(s => s
+              .SetTargetPath(settings.ArtifactsDirectory + "\\nuke-fusion.nuspec")
+              .SetOutputDirectory(settings.ArtifactsDirectory));
+        });
+
+
+
+}
+

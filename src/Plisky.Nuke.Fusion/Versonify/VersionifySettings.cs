@@ -6,8 +6,10 @@ namespace Plisky.Nuke.Fusion;
 public class VersonifySettings : ToolOptions {
 
 
-
-
+    /// <summary>
+    /// Corresponds to -O in the versionify tool.  Can be env, con, file, np, npo, azdo
+    /// </summary>
+    public string OutputStyle { get; set; } = string.Empty;
 
     public string TraceConfiguration { get; set; } = string.Empty;
 
@@ -109,42 +111,18 @@ public class VersonifySettings : ToolOptions {
         if (!string.IsNullOrEmpty(TraceConfiguration)) {
             result.AppendLiteral($" -Trace={TraceConfiguration}");
         }
+
+        if (OutputStyle != string.Empty) {
+            if (!OutputStyle.EndsWith("-nf")) {
+                OutputStyle += "-nf";
+            }
+            result.AppendLiteral($" -O={OutputStyle}");
+        }
+        else {
+            result.AppendLiteral(" -O=con-nf");
+        }
         return result;
     }
 
 
-#if false
-    protected override Arguments ConfigureProcessArguments(Arguments arguments) {
-        arguments
-          .Add(Command)
-          .Add($"-vs={VersionPersistanceValue}")
-          .Add($"-Root={Root}");
-
-        if (!string.IsNullOrEmpty(QuickValue)) {
-            arguments.Add($"-Q={QuickValue}");
-        }
-
-        if (!string.IsNullOrEmpty(MultiMatchFile)) {
-            arguments.Add($"-mm={MultiMatchFile}");
-        }
-
-        if (Debug) {
-            arguments.Add("-Debug");
-        }
-
-        if (DryRun) {
-            arguments.Add("-DryRun");
-        }
-
-        if (PerformIncrement) {
-            arguments.Add("-Increment");
-        }
-
-        if (!string.IsNullOrEmpty(TraceConfiguration)) {
-            arguments.Add($"-Trace={TraceConfiguration}");
-        }
-
-        return base.ConfigureProcessArguments(arguments);
-    }
-#endif
 }

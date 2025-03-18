@@ -7,15 +7,15 @@ using global::Nuke.Common.Tooling;
 [Serializable]
 public class GenericSettings : ToolOptions {
 
-    private string ResolvedExePath;
+    private string? ResolvedExePath { get; set; }
 
-    public string GenericExeName { get; set; }
+    public string? GenericExeName { get; set; }
 
 
     //public override string ProcessToolPath => GetPath();
     public bool TryAutoResolve { get; set; } = true;
-    public string DirectSetArguments { get; set; }
-    public string WorkingDirectory { get; set; }
+    public string? DirectSetArguments { get; set; }
+    public string? WorkingDirectory { get; set; }
 
     private string GetPath() {
 
@@ -26,8 +26,7 @@ public class GenericSettings : ToolOptions {
 
         if (File.Exists(GenericExeName)) {
             ResolvedExePath = GenericExeName;
-        }
-        else {
+        } else {
             if (TryAutoResolve) {
                 string sys32 = Environment.GetFolderPath(Environment.SpecialFolder.System);
                 string whereExe = Path.Combine(sys32, "where.exe");
@@ -53,8 +52,7 @@ public class GenericSettings : ToolOptions {
     private string GetWorkingDirectory() {
         if (string.IsNullOrEmpty(WorkingDirectory)) {
             return base.ProcessWorkingDirectory;
-        }
-        else {
+        } else {
             return WorkingDirectory;
         }
     }

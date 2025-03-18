@@ -1,4 +1,5 @@
 ﻿**/plisky-nuke-fusion/src/**/Plisky.Nuke.Fusion.csproj|StdAssembly
 **/plisky-nuke-fusion/src/**/Plisky.Nuke.Fusion.csproj|StdInformational
 **/plisky-nuke-fusion/src/**/Plisky.Nuke.Fusion.csproj|StdFile
-
+**/plisky-nuke-fusion/src/**/Nuke-Fusion.nuspec|Nuspec
+**/plisky-nuke-fusion/src/**/Nuke-Fusion.nuspec|TextFile

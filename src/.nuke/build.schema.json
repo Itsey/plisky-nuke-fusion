@@ -24,26 +24,24 @@
     "ExecutableTarget": {
       "type": "string",
       "enum": [
-        "BuildNugetPackage",
+        "ApplyGitTag",
+        "ApplyVersion",
+        "ArrangeStep",
         "Clean",
         "Compile",
+        "ConstructStep",
+        "ExamineStep",
         "Initialise",
+        "IntegrationTest",
         "MollyCheck",
-        "PnfBuildNugetPackage",
-        "PnfCompile",
-        "PnfPublish",
-        "PnfReleaseNugetPackage",
-        "PnfUnitTest",
-        "PnfVersion",
-        "Prepare",
-        "Publish",
-        "Release",
-        "ReleaseNugetPackage",
-        "ReleaseUpdatedNukeFusion",
-        "Restore",
+        "PackageStep",
+        "QueryNextVersion",
+        "ReleaseStep",
+        "TestStep",
         "UnitTest",
-        "Validate",
-        "VersionSource"
+        "VersionQuickStep",
+        "VersionSource",
+        "Wrapup"
       ]
     },
     "Verbosity": {
@@ -124,6 +122,14 @@
             "Debug",
             "Release"
           ]
+        },
+        "QuickVersion": {
+          "type": "string",
+          "description": "Specifies a quick version command for the versioning quick step"
+        },
+        "ReleaseName": {
+          "type": "string",
+          "description": "Specifies a quick version command for the versioning quick step"
         },
         "Solution": {
           "type": "string",

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<package >
+<package>
   <metadata>
     <id>Plisky.Nuke.Fusion</id>
-    <version>0.0.0.</version>
+    <version>0.1.15</version>
     <authors>Itsey</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://itsey.github.io/</projectUrl>
     <description>Plisky.Nuke.Fusion, adding Nuke build support to plisky tooling.</description>
     <releaseNotes>
-		XXX-VERSION-XXX
+		0.1
 		Initial release, added verisoning support to Nuke.Fusion
 	</releaseNotes>
     <readme>.\readme.md</readme>

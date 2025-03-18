@@ -8,4 +8,10 @@ public class LocalBuildConfig {
 
     public bool DryRunIfLocal { get; set; }
     public string NotifyWebhookUrl { get; internal set; }
+
+    public AbsolutePath DependenciesDirectory { get; set; }
+    public string MollyRulesToken { get; set; }
+    public string MollyPrimaryToken { get; set; }
+    public string MollyRulesVersion { get; set; }
+
 }

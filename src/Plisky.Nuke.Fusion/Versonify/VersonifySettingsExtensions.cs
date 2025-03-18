@@ -63,4 +63,11 @@ public static partial class VersonifySettingsExtensions {
     }
 
 
+    public static T SetOutputStyle<T>(this T toolSettings, string outputStyle) where T : VersonifySettings {
+        //toolSettings = toolSettings.NewInstance();
+        toolSettings.OutputStyle = outputStyle;
+        return toolSettings;
+    }
+
+
 }
