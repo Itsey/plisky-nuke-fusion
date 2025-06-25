@@ -40,7 +40,6 @@
         "TestStep",
         "UnitTest",
         "VersionQuickStep",
-        "VersionSource",
         "Wrapup"
       ]
     },

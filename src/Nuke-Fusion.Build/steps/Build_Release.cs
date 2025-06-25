@@ -29,10 +29,6 @@ public partial class Build : NukeBuild {
           }
       });
 
-
-
-
-
     // Well known step for releasing into the selected environment.  Arrange Construct Examine Package [Release] Test
     public Target ReleaseStep => _ => _
       .DependsOn(Initialise, PackageStep)
