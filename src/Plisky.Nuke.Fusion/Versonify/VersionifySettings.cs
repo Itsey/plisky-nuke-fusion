@@ -83,7 +83,7 @@ public class VersonifySettings : ToolOptions {
     }
 
     public ArgumentStringHandler GetArgsString() {
-        var result = new ArgumentStringHandler();
+        var result = new ArgumentStringHandler(0,0, out _);
         result.AppendLiteral(Command);
         result.AppendLiteral($" -vs={VersionPersistanceValue}");
         result.AppendLiteral($" -Root={Root}");

@@ -37,7 +37,7 @@ public class MollycoddleSettings : ToolOptions {
 
 
     public ArgumentStringHandler GetArgsString() {
-        var result = new ArgumentStringHandler();
+        var result = new ArgumentStringHandler(0, 0, out _);
         result.AppendLiteral($" -dir={Directory}");
         result.AppendLiteral($" -rulesFile={RulesFile}");
         result.AppendLiteral($" -formatter={Formatter}");
