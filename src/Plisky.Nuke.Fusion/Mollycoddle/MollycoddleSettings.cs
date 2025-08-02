@@ -31,8 +31,8 @@ public class MollycoddleSettings : ToolOptions {
     public string GetPath() {
         return NuGetToolPathResolver.GetPackageExecutable(
           packageId: "Plisky.Mollycoddle",
-          packageExecutable: "Mollycoddle.exe",
-          framework: null);
+          packageExecutable: "Mollycoddle.exe|mollycoddle.dll",
+          framework: "9.0");
     }
 
 

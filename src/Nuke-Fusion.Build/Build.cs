@@ -1,9 +1,12 @@
 using System;
+using System.IO;
 using System.Linq;
 using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
+using Nuke.Common.Tools.PowerShell;
 using Plisky.Diagnostics;
 using Serilog;
 
@@ -20,6 +23,10 @@ public partial class Build : NukeBuild {
 
     [Parameter("Specifies a quick version command for the versioning quick step")]
     readonly string ReleaseName = "";
+
+    [Parameter("PreRelease will only release a pre-release verison of the package.  Uses pre-release versioning.")]
+    readonly bool PreRelease = true;
+
 
     [GitRepository]
     readonly GitRepository GitRepository;
@@ -41,6 +48,30 @@ public partial class Build : NukeBuild {
           b.Flush().Wait();
           System.Threading.Thread.Sleep(10);
       });
+
+    public Target NexusLive => _ => _
+     .After(Initialise)
+     .DependsOn(Initialise)
+     .Executes(() => {
+         string? dotb = Environment.GetEnvironmentVariable("DOTB_BUILDTOOLS");
+         if (!string.IsNullOrWhiteSpace(dotb)) {
+             Log.Information($"Build> Ensure Nexus Is Live>  Build Tools Directory: {dotb}");
+
+             string nexusInitScript = Path.Combine(dotb, "scripts", "nexusInit.ps1");
+             if (File.Exists(nexusInitScript)) {
+                 PowerShellTasks.PowerShell(x =>
+                    x.SetFile(nexusInitScript)
+                    .SetFileArguments("checkup")
+                    .SetProcessToolPath("pwsh")
+                 );
+             } else {
+                 Log.Error($"Build>Initialise>  Build Tools Directory: {nexusInitScript} - Nexus Init Script not found.");
+             }
+
+         } else {
+             Log.Information("Build>Initialise>  Build Tools Directory: Not Set, no additional initialisation taking place.");
+         }
+     });
 
     Target Initialise => _ => _
       .Executes(() => {
@@ -78,7 +109,8 @@ public partial class Build : NukeBuild {
               MollyPrimaryToken = "%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/primaryfiles/XXVERSIONNAMEXX/",
               MollyRulesToken = "%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/molly/XXVERSIONNAMEXX/defaultrules.mollyset",
               MollyRulesVersion = "default",
-              VersioningPersistanceToken = @"%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/vstore/pnf-version.store"
+              VersioningPersistanceToken = @"%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/vstore/pnf.vstore",
+              VersioningPreReleasePersistanceToken = @"%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/vstore/pnf-pre.vstore"
           };
 
 

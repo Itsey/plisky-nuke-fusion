@@ -57,24 +57,5 @@ public class GenericSettings : ToolOptions {
         }
     }
 
-#if true
-    public ArgumentStringHandler GetArgsString() {
-        return DirectSetArguments;
-    }
-#else
-    protected override Arguments ConfigureProcessArguments(Arguments arguments) {
 
-        if (DirectSetArguments != null) {
-            arguments.Add(DirectSetArguments);
-        }
-
-        /* Need to override
-        if (WorkingDirectory != null) {
-            ProcessWorkingDirectory = WorkingDirectory;
-        }
-        */
-
-        return base.ConfigureProcessArguments(arguments);
-    }
-#endif
 }

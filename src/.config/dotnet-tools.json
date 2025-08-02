@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "plisky.versonify": {
+      "version": "1.0.0-Austen.1.3",
+      "commands": ["versonify"]
+    }
+  }
+}

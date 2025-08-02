@@ -13,5 +13,5 @@ public class LocalBuildConfig {
     public string MollyRulesToken { get; set; }
     public string MollyPrimaryToken { get; set; }
     public string MollyRulesVersion { get; set; }
-
+    public string VersioningPreReleasePersistanceToken { get; internal set; }
 }

@@ -1,12 +1,32 @@
-Plisky.Nuke.Fusion Readme.  V0.
+﻿# 💥Plisky.Nuke.Fusion Readme.💥
 
-This is the package for Plisky.Nuke.Fusion.  This package provides Nuke build support for the Plisky tools.  It adds Nuke tasks to support:
-* mollycoddle
-* versonify
-* glitter
+## About
+
+This is a support package for integration Plisky Code Craft tools with Nuke build engine.  It provides wrappers for Mollycoddle, Versonify and a Discord hook.  See the full documentation on the gitub pages https://itsey.github.io/version-index.html
+
+## Key Features
 
 
-Ultimately I hope that this package can be replaced with inclusion into the Nuke build package but this is a temporary home while I get to grips with the tooling and the approach for providing contributions.
+## Usage.
 
-See [http://itsey.github.io](http://itsey.github.io) for more information on the Plisky tools.
+See the full documentation on the gitub pages https://itsey.github.io/version-index.html
+ 
+```csharp
+var mc = new MollycoddleTasks();
+mcs.SetRulesFile(/* Path to molly rules file*/);
+mcs.SetPrimaryRoot(/* Path to primary root*/);
+mcs.SetFormatter(/* Select Formatter */);
+mcs.SetDirectory(/* Path to root folder */);
+
+mc.PerformScan(mcs);
+```
+ 
+ ## Additional Documentation
+ 
+ * Main Documentation: https://itsey.github.io/
+ * Project Repository: https://github.com/Itsey/plisky-nuke-fusion
+
+Longer term goal is to include this package within the main Nuke project.
+
+
 

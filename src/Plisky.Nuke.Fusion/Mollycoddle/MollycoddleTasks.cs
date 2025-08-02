@@ -6,7 +6,9 @@ using global::Nuke.Common.Tooling;
 
 
 public class MollycoddleTasks : ToolTasks {
-
+    public MollycoddleTasks() {
+        this.GetLogger().Invoke(OutputType.Std, $"{PnfUtilities.GetPnfString()} [Mollycoddle Tasks]");
+    }
 
     public IReadOnlyCollection<Output> PerformScan(Configure<MollycoddleSettings> configure) {
 

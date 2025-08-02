@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using global::Nuke.Common.Tooling;
 
 public class VersonifyTasks : ToolTasks, IRequirePathTool {
+    public VersonifyTasks() {
+        this.GetLogger().Invoke(OutputType.Std,$"{PnfUtilities.GetPnfString()} [Versonify Tasks]");
+    }
 
     public static IReadOnlyCollection<Output> Versonify(ArgumentStringHandler arguments, string? workingDirectory = null, IReadOnlyDictionary<string, string>? environmentVariables = null, int? timeout = null, bool? logOutput = null, bool? logInvocation = null, Action<OutputType, string>? logger = null, Func<IProcess, object>? exitHandler = null)
         => new VersonifyTasks().Run(arguments, workingDirectory, environmentVariables, timeout, logOutput, logInvocation, logger, exitHandler);
@@ -25,9 +28,6 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
         IReadOnlyCollection<Output> result;
 
         settings = settings ?? new VersonifySettings();
-
-        this.GetLogger().Invoke(OutputType.Std, "Versioning By Versonify!");
-
 
         if (command != VersonifyCommand.Unknown) {
             settings.SetCommand(command);
@@ -53,7 +53,20 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
             } else if (l.StartsWith("PNFN]")) {
                 ReleaseName = l.Substring(5);
                 this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned ReleaseName As: {ReleaseName}");
+            } else if (l.StartsWith("PNF3]")) {
+                ThreeDigit = l.Substring(5);
+                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned ThreeDigit As: {ThreeDigit}");
+            } else if (l.StartsWith("PN4D]")) {
+                FourDigitNumeric = l.Substring(5);
+                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned FourDigitNumeric As: {FourDigitNumeric}");
+            } else if (l.StartsWith("PNQF]")) {
+                QueuedFull = l.Substring(5);
+                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned Queued Full Version As: {QueuedFull}");
+            } else if (l.StartsWith("PN3D]")) {
+                ThreeDigitNumeric = l.Substring(5);
+                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned Three Digit Numeric As: {ThreeDigitNumeric}");
             }
+
         }
         return result;
     }
@@ -61,21 +74,17 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
     public string ShortVersion { get; set; } = string.Empty;
     public string ReleaseName { get; set; } = string.Empty;
     public string VersionLiteral { get; set; } = string.Empty;
+    public string FourDigitNumeric { get; set; } = string.Empty;
+    public string ThreeDigit { get; set; } = string.Empty;
+    public string QueuedFull { get; set; } = string.Empty;
+    public string ThreeDigitNumeric { get; set; } = string.Empty;
 
     public IReadOnlyCollection<Output> RawExecute(VersonifySettings settings) {
         return ExecuteVersonify(settings);
-        //var x = 
-        //x.Wait();
-        //return x.Result;
     }
 
     public IReadOnlyCollection<Output> RawExecute(string commandLine) {
         return ExecuteVersonify(null, replaceCommandLine: commandLine);
-
-        //var x = 
-        //x.Wait();
-        //return x.Result;
-        //return (IReadOnlyCollection<Output>);
     }
 
 
@@ -90,21 +99,6 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
 
     public IReadOnlyCollection<Output> FileUpdateCommand(VersonifySettings settings) {
         return ExecuteVersonify(settings, VersonifyCommand.UpdateFiles);
-        //var x = 
-        //x.Wait();
-        //return x.Result;
-
-        //return (IReadOnlyCollection<Output>)
-
-        //settings = settings ?? new VersonifySettings();
-
-
-        //string tpth = settings.GetPath();
-        //SetToolPath(tpth);
-
-        //var result = Run(settings.GetArgsString());
-        //return result;
-
     }
 
     public IReadOnlyCollection<Output> OverrideCommand(Configure<VersonifySettings> configure) {
@@ -116,17 +110,6 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
 
     public IReadOnlyCollection<Output> OverrideCommand(VersonifySettings settings) {
         return ExecuteVersonify(settings, VersonifyCommand.Override);
-        //var x = 
-        //x.Wait();
-        //return x.Result;
-
-        //return (IReadOnlyCollection<Output>)
-        //settings = settings ?? new VersonifySettings();
-        //settings.SetCommand(VersonifyCommand.Override);
-        //string tpth = settings.GetPath();
-        //SetToolPath(tpth);
-        //var result = Run(settings.GetArgsString());
-        //return result;
     }
 
     public IReadOnlyCollection<Output> PassiveCommand(Configure<VersonifySettings> configure) {
@@ -138,20 +121,5 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
 
     private IReadOnlyCollection<Output> PassiveCommand(VersonifySettings settings) {
         return ExecuteVersonify(settings, VersonifyCommand.Passive);
-        //var x = 
-        //x.Wait();
-        //return x.Result;
-        //return (IReadOnlyCollection<Output>);
-
-        //settings = settings ?? new VersonifySettings();
-
-        //string tpth = settings.GetPath();
-        //SetToolPath(tpth);
-
-        //settings.SetCommand(VersonifyCommand.Passive);
-
-        //var result = Run(settings.GetArgsString());
-        //return result;
-
     }
 }

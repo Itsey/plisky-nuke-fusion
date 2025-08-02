@@ -1,5 +1,5 @@
-﻿
-using System;
+﻿using System;
+using System.Linq;
 using Nuke.Common;
 using Nuke.Common.Tools.DotNet;
 using Plisky.Nuke.Fusion;
@@ -36,20 +36,16 @@ public partial class Build : NukeBuild {
               throw new InvalidOperationException("The solution must be set");
           }
 
-
           if (!string.IsNullOrEmpty(QuickVersion)) {
               var vc = new VersonifyTasks();
 
               vc.OverrideCommand(s => s
                 .SetVersionPersistanceValue(settings.VersioningPersistanceToken)
                 .SetDebug(true)
-                .SetRelease(ReleaseName)
                 .SetRoot(Solution.Directory)
                 .SetQuickValue(QuickVersion)
               );
           }
-
-
       });
 
     public Target QueryNextVersion => _ => _
@@ -68,10 +64,14 @@ public partial class Build : NukeBuild {
               throw new InvalidOperationException("The solution must be set");
           }
 
-
+          string versioningToken = settings.VersioningPersistanceToken;
+          if (PreRelease) {
+              Log.Information("Build>QueryNextVersion>PreRelease is set, using non release Token.");
+              versioningToken = settings.VersioningPreReleasePersistanceToken;
+          }
           var vc = new VersonifyTasks();
           vc.PassiveCommand(s => s
-          .SetVersionPersistanceValue(settings.VersioningPersistanceToken)
+          .SetVersionPersistanceValue(versioningToken)
           .SetOutputStyle("con-nf")
           .SetRoot(Solution.Directory));
 
@@ -85,7 +85,6 @@ public partial class Build : NukeBuild {
       .DependsOn(Initialise)
       .Before(Compile)
       .Executes(() => {
-
           if (settings == null) {
               Log.Error("Build>ApplyVersion>Settings is null.");
               throw new InvalidOperationException("The settings must be set");
@@ -101,13 +100,21 @@ public partial class Build : NukeBuild {
           if (IsLocalBuild) {
               // Passive Get Current Version
               Log.Information("Local Build - Versioning Set To Dry Run");
-              dryRunMode = true;
+              // dryRunMode = true;
           }
-          Log.Information($"Versioning Token : {settings.VersioningPersistanceToken}");
+
+          string versioningType = "Pre-Release";
+          string versionStoreFile = settings.VersioningPreReleasePersistanceToken;
+          if (!PreRelease) {
+              versionStoreFile = settings.VersioningPersistanceToken;
+              versioningType = "Release";
+          }
+
+          Log.Information($"[Versioning]{versioningType} versioning displaying curent version number.");
 
           var vc = new VersonifyTasks();
           vc.PassiveCommand(s => s
-              .SetVersionPersistanceValue(settings.VersioningPersistanceToken)
+              .SetVersionPersistanceValue(versionStoreFile)
               .SetOutputStyle("azdo-nf")
               .SetRoot(Solution.Directory)
           );
@@ -116,7 +123,7 @@ public partial class Build : NukeBuild {
           mmPath /= "autoversion.txt";
 
           vc.FileUpdateCommand(s => s
-              .SetVersionPersistanceValue(settings.VersioningPersistanceToken)
+              .SetVersionPersistanceValue(versionStoreFile)
               .AddMultimatchFile(mmPath)
               .SetDebug(false)
               .PerformIncrement(true)
@@ -127,11 +134,52 @@ public partial class Build : NukeBuild {
           FullVersionNumber = vc.VersionLiteral;
           Log.Information($"Version applied:{vc.VersionLiteral}");
 
+          // BUG LFY-30.  vc.VersionLiteral is not set to the FileUpdateCommand output so have queued another passive to fix this.
 
+          vc.PassiveCommand(s => s
+             .SetVersionPersistanceValue(versionStoreFile)
+             .SetOutputStyle("azdo")
+             .SetRoot(Solution.Directory)
+         );
+
+          Log.Information($"[Versioning]{versioningType} Increment and Update Exsiting Files.({vc.VersionLiteral})");
+
+          if (!PreRelease) {
+              // Hack.  Curently the return from versonify is not set to be different display types, we need 3 digit for semver so hacking the last digit off.
+
+              int periodCount = 0;
+              string verNumberToUse = string.Empty;
+              foreach (char c in vc.VersionLiteral) {
+                  if (c == '.') {
+                      if (periodCount == 2) {
+                          break;
+                      }
+                      periodCount++;
+                  }
+
+                  verNumberToUse += c;
+              }
+
+              while (periodCount < 2) {
+                  verNumberToUse += ".0";
+                  periodCount++;
+              }
+
+              b.Assert.True(verNumberToUse.Count(x => x == '.') == 2, $"The version number ({verNumberToUse}) should be in the format N.N.N.");
+              Log.Information($"[Versioning]{versioningType} Applying release version number to pre-release data. ({vc.VersionLiteral} > {verNumberToUse})");
+
+              vc.OverrideCommand(s => s
+                  .SetVersionPersistanceValue(settings.VersioningPreReleasePersistanceToken)
+                  .SetOutputStyle("azdo-nf")
+                  .AsDryRun(dryRunMode)
+                  .SetRoot(Solution.Directory)
+                  .SetQuickValue(verNumberToUse)
+              );
+          }
+
+          FullVersionNumber = vc.VersionLiteral;
+          Log.Information($"[Versioning]Version applied:{vc.VersionLiteral}");
       });
-
-
-
 
     private Target Compile => _ => _
         .Before(ExamineStep)

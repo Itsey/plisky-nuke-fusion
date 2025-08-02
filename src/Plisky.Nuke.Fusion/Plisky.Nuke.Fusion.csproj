@@ -5,10 +5,38 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>0.0</AssemblyVersion>
-    <Version>0.0.0.0</Version>
-    <FileVersion>0.0.0.0</FileVersion>
+    <AssemblyVersion>1.0</AssemblyVersion>
+    <Version>1.0.1-pre.0.4</Version>
+    <FileVersion>1.0.1-pre.0.4</FileVersion>
   </PropertyGroup>
+  <PropertyGroup>
+    <Summary>Plisky.Nuke.Fusion, providing plisky library support to the Nuke build engine.</Summary>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <ReleaseNotesFile>..\_Dependencies\SupportingFiles\release-notes.md</ReleaseNotesFile>
+    <PackageId>Plisky.Nuke.Fusion</PackageId>
+    <Authors>https://github.com/Itsey</Authors>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://itsey.github.io/</PackageProjectUrl>
+    <Description>Plisky.Nuke.Fusion providing plisky tool support to the Nuke build engine..</Description>
+    <Copyright>Copyright 2025</Copyright>
+    <PackageTags>nuke;cli;build</PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>portable</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\_Dependencies\Packaging\pnf-icon.png" Pack="true" PackagePath="" />
+    <None Include="..\_Dependencies\Packaging\readme.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <Target Name="AddReleaseNotesToPackage" BeforeTargets="GenerateNuspec">
+    <Message Importance="high" Text="Creating Custom Release Notes." />
+    <PropertyGroup>
+      <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)\..\_Dependencies\Packaging\changelog.md"))</PackageReleaseNotes>
+    </PropertyGroup>
+  </Target>
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="4.0.2" />
     <PackageReference Include="Nuke.Common" Version="9.0.4" />

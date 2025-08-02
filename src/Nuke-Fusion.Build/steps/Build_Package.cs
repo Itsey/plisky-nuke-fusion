@@ -45,22 +45,39 @@ public partial class Build : NukeBuild {
                   .EnableNoBuild()
                 );
             }
-            var readmeFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\readme.md";
-            var targetdir = nugetStructure + "\\readme.md";
-            publishDirectory.CopyToDirectory(nugetStructure, ExistsPolicy.MergeAndOverwrite);
+            //var readmeFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\readme.md";
+            //var targetdir = nugetStructure + "\\readme.md";
+            //publishDirectory.CopyToDirectory(nugetStructure, ExistsPolicy.MergeAndOverwrite);
 
-            //targetdir.Copy(targetdir, ExistsPolicy.FileOverwrite);
-            readmeFile.Copy(targetdir, ExistsPolicy.FileOverwrite);
+            ////targetdir.Copy(targetdir, ExistsPolicy.FileOverwrite);
+            //readmeFile.Copy(targetdir, ExistsPolicy.FileOverwrite);
 
-            var nugetPackageFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\nuke-fusion.nuspec";
-            var destDir = settings.ArtifactsDirectory + "\\nuke-fusion.nuspec";
-            nugetPackageFile.Copy(destDir, ExistsPolicy.FileOverwrite);
+            //var nugetPackageFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\nuke-fusion.nuspec";
+            //var destDir = settings.ArtifactsDirectory + "\\nuke-fusion.nuspec";
+            //nugetPackageFile.Copy(destDir, ExistsPolicy.FileOverwrite);
 
 
 
-            NuGetTasks.NuGetPack(s => s
-              .SetTargetPath(settings.ArtifactsDirectory + "\\nuke-fusion.nuspec")
-              .SetOutputDirectory(settings.ArtifactsDirectory));
+            //NuGetTasks.NuGetPack(s => s
+            //  .SetTargetPath(settings.ArtifactsDirectory + "\\nuke-fusion.nuspec")
+            //  .SetOutputDirectory(settings.ArtifactsDirectory));
+
+
+
+            // var project = Solution.GetProject("Versonify");
+            //if (project == null) { throw new InvalidOperationException("Project not found"); }
+
+            //var publishDirectory = settings.ArtifactsDirectory + "\\publish\\";
+            //var nugetStructure = settings.ArtifactsDirectory + "\\nuget";
+
+            DotNetTasks.DotNetPack(s => s
+              .SetProject(project)
+              .SetConfiguration(Configuration)
+              .SetOutputDirectory(nugetStructure)
+              .EnableNoBuild()
+              .EnableNoRestore()
+            );
+
         });
 
 

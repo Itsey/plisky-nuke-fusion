@@ -34,9 +34,11 @@
         "Initialise",
         "IntegrationTest",
         "MollyCheck",
+        "NexusLive",
         "PackageStep",
         "QueryNextVersion",
         "ReleaseStep",
+        "RestoreStep",
         "TestStep",
         "UnitTest",
         "VersionQuickStep",
@@ -121,6 +123,10 @@
             "Debug",
             "Release"
           ]
+        },
+        "PreRelease": {
+          "type": "boolean",
+          "description": "PreRelease will only release a pre-release verison of the package.  Uses pre-release versioning"
         },
         "QuickVersion": {
           "type": "string",

@@ -5,7 +5,6 @@ namespace Plisky.Nuke.Fusion;
 [Serializable]
 public class VersonifySettings : ToolOptions {
 
-
     /// <summary>
     /// Corresponds to -O in the versionify tool.  Can be env, con, file, np, npo, azdo
     /// </summary>
@@ -53,7 +52,6 @@ public class VersonifySettings : ToolOptions {
     /// </summary>
     public string Root { get; set; } = string.Empty;
 
-
     public string VersionPersistanceValue { get; set; } = string.Empty;
 
     /// <summary>
@@ -68,7 +66,6 @@ public class VersonifySettings : ToolOptions {
 
     public void SetCommand(VersonifyCommand cmd) {
         Command = "-Command=" + cmd.ToString();
-
     }
 
     //public override string ProcessToolPath => GetPath();
@@ -78,12 +75,12 @@ public class VersonifySettings : ToolOptions {
     public string GetPath() {
         return NuGetToolPathResolver.GetPackageExecutable(
           packageId: "Plisky.Versonify",
-          packageExecutable: "Versonify.exe",
-          framework: null);
+          packageExecutable: "Versonify.dll|versonify.exe",
+          framework: "9.0");
     }
 
     public ArgumentStringHandler GetArgsString() {
-        var result = new ArgumentStringHandler(0,0, out _);
+        var result = new ArgumentStringHandler(0, 0, out _);
         result.AppendLiteral(Command);
         result.AppendLiteral($" -vs={VersionPersistanceValue}");
         result.AppendLiteral($" -Root={Root}");
@@ -117,12 +114,9 @@ public class VersonifySettings : ToolOptions {
                 OutputStyle += "-nf";
             }
             result.AppendLiteral($" -O={OutputStyle}");
-        }
-        else {
+        } else {
             result.AppendLiteral(" -O=con-nf");
         }
         return result;
     }
-
-
 }
