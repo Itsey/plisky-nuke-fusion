@@ -8,6 +8,7 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.PowerShell;
 using Plisky.Diagnostics;
+using Plisky.Diagnostics.Listeners;
 using Serilog;
 
 public partial class Build : NukeBuild {
@@ -16,28 +17,26 @@ public partial class Build : NukeBuild {
     public static int Main() => Execute<Build>(x => x.Compile);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [Parameter("Specifies a quick version command for the versioning quick step")]
-    readonly string QuickVersion = "";
+    private readonly string QuickVersion = "";
 
     [Parameter("Specifies a quick version command for the versioning quick step")]
-    readonly string ReleaseName = "";
+    private readonly string ReleaseName = "";
 
     [Parameter("PreRelease will only release a pre-release verison of the package.  Uses pre-release versioning.")]
-    readonly bool PreRelease = true;
-
+    private readonly bool PreRelease = true;
 
     [GitRepository]
-    readonly GitRepository GitRepository;
+    private readonly GitRepository GitRepository;
 
     [Solution]
-    Solution Solution;
+    private Solution Solution;
 
-    LocalBuildConfig settings;
+    private LocalBuildConfig settings;
 
-
-    AbsolutePath SourceDirectory => RootDirectory / "src";
+    private AbsolutePath SourceDirectory => RootDirectory / "src";
 
     public Target Wrapup => _ => _
       .DependsOn(Initialise)
@@ -67,43 +66,36 @@ public partial class Build : NukeBuild {
              } else {
                  Log.Error($"Build>Initialise>  Build Tools Directory: {nexusInitScript} - Nexus Init Script not found.");
              }
-
          } else {
              Log.Information("Build>Initialise>  Build Tools Directory: Not Set, no additional initialisation taking place.");
          }
      });
 
-    Target Initialise => _ => _
+    private Target Initialise => _ => _
       .Executes(() => {
-
           if (Solution == null) {
               Log.Error("Build>Initialise>Solution is null.");
               throw new InvalidOperationException("The solution must be set");
           }
 
-
-          //Bilge.AddHandler(new TCPHandler("127.0.0.1", 9060, true));
-
+          Bilge.AddHandler(new TCPHandler("127.0.0.1", 9060, true));
           Bilge.SetConfigurationResolver((a, b) => {
               return System.Diagnostics.SourceLevels.Verbose;
           });
 
           b = new Bilge("Nuke", tl: System.Diagnostics.SourceLevels.Verbose);
 
-          Bilge.Alert.Online("Versonify-Build");
-          b.Info.Log("Versionify Build Process Initialised, preparing Initialisation section.");
+          Bilge.Alert.Online("Pnf-Build");
+          b.Info.Log("Pnf Build Process Initialised, preparing Initialisation section.");
 
-
-
-          var ap = RootDirectory.Parent / "src"; // / "src_TestSolution/NukeTestSolution.sln";
-          //ap = ap / "src_TestSolution";
+          var ap = RootDirectory.Parent / "src";
           ap = ap / "Plisky.Nuke.Fusion.sln";
 
           Solution = ap.ReadSolution();
 
           settings = new LocalBuildConfig() {
               DependenciesDirectory = Solution.Projects.First(x => x.Name == "_Dependencies").Directory,
-              ArtifactsDirectory = @"D:\Scratch\_build\vsfbld\",
+              ArtifactsDirectory = Path.Combine(Path.GetTempPath(), "_build\\pnfbld\\"),
               NonDestructive = false,
               MainProjectName = "Plisky.Nuke.Fusion",
               MollyPrimaryToken = "%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/primaryfiles/XXVERSIONNAMEXX/",
@@ -113,13 +105,10 @@ public partial class Build : NukeBuild {
               VersioningPreReleasePersistanceToken = @"%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/vstore/pnf-pre.vstore"
           };
 
-
           if (settings.NonDestructive) {
               Log.Information("Initialised - In Non Destructive Mode.");
           } else {
               Log.Information("Initialised - In Destructive Mode.");
           }
-
       });
-
 }

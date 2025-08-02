@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using Nuke.Common;
 using Nuke.Common.Tools.Git;
 using Nuke.Common.Tools.NuGet;
@@ -13,18 +11,19 @@ public partial class Build : NukeBuild {
       .DependsOn(Initialise)
       .Before(Wrapup)
       .Executes(() => {
-
-          if (settings.NonDestructive) {
-              Log.Information("Non destructive, skipping release");
-              return;
-          }
-
           if (IsSucceeding) {
+              if (settings.NonDestructive) {
+                  Log.Information("Non destructive, skipping release");
+                  return;
+              }
+
               if (string.IsNullOrEmpty(FullVersionNumber)) {
                   Log.Information("No version number, skipping Tag");
               } else {
-                  Log.Information("Applying Git Tag");
-                  GitTasks.Git($"tag -a {FullVersionNumber} -m \"Release {FullVersionNumber}\"");
+                  if (!PreRelease) {
+                      Log.Information("ReleaseVersion - Tagging Release in Git.");
+                      GitTasks.Git($"tag -a {FullVersionNumber} -m \"Release {FullVersionNumber}\"");
+                  }
               }
           }
       });
@@ -36,21 +35,14 @@ public partial class Build : NukeBuild {
       .Triggers(ApplyGitTag)
       .After(PackageStep)
       .Executes(() => {
-
-
           if (settings.NonDestructive) {
               Log.Information("Non destructive, skipping release");
               return;
           }
 
-
           NuGetTasks.NuGetPush(s => s
-              .SetTargetPath(settings.ArtifactsDirectory + "\\Plisky.Nuke.Fusion*.nupkg")
+              .SetTargetPath(settings.ArtifactsDirectory + "\\nuget\\Plisky.Nuke.Fusion*.nupkg")
               .SetSource("https://api.nuget.org/v3/index.json")
               .SetApiKey(Environment.GetEnvironmentVariable("PLISKY_PUBLISH_KEY")));
-
       });
-
-
 }
-
