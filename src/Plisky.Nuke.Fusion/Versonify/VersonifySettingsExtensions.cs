@@ -69,5 +69,11 @@ public static partial class VersonifySettingsExtensions {
         return toolSettings;
     }
 
+    public static T SetFramework<T>(this T toolSettings, string framework) where T : VersonifySettings {
+        // toolSettings = toolSettings.NewInstance();
+        toolSettings.Framework = framework;
+        return toolSettings;
+    }
+
 
 }

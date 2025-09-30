@@ -72,11 +72,14 @@ public class VersonifySettings : ToolOptions {
 
     public bool DryRun { get; set; }
 
+    public string Framework { get; set; }
+
     public string GetPath() {
+        string? fw = string.IsNullOrEmpty(Framework) ? null : Framework;
         return NuGetToolPathResolver.GetPackageExecutable(
           packageId: "Plisky.Versonify",
           packageExecutable: "Versonify.dll|versonify.exe",
-          framework: "9.0");
+          framework: fw);
     }
 
     public ArgumentStringHandler GetArgsString() {
