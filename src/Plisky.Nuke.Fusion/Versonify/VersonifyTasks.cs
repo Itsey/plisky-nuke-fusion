@@ -64,7 +64,10 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
                 this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned Queued Full Version As: {QueuedFull}");
             } else if (l.StartsWith("PN3D]")) {
                 ThreeDigitNumeric = l.Substring(5);
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned Three Digit Numeric As: {ThreeDigitNumeric}");
+                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned ThreeDigitNumeric As: {ThreeDigitNumeric}");
+            } else if (l.StartsWith("PNF4]")) {
+                FourDigit = l.Substring(5);
+                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned FourDigit As:{FourDigit} ");
             }
 
         }
@@ -78,6 +81,7 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
     public string ThreeDigit { get; set; } = string.Empty;
     public string QueuedFull { get; set; } = string.Empty;
     public string ThreeDigitNumeric { get; set; } = string.Empty;
+    public string FourDigit { get; set; } = string.Empty;
 
     public IReadOnlyCollection<Output> RawExecute(VersonifySettings settings) {
         return ExecuteVersonify(settings);
