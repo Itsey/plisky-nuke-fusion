@@ -48,6 +48,9 @@ public class MollycoddleSettings : ToolOptions {
         if (!string.IsNullOrEmpty(PrimaryRoot)) {
             result.AppendLiteral($" -primaryRoot={PrimaryRoot}");
         }
+        if (RuleHelp) {
+            result.AppendLiteral(" -addrulehelp");
+        }
         if (Debug) {
             result.AppendLiteral(" -Debug=v-**");
         }
