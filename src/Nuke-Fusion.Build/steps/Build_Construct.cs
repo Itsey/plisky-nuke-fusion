@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Nuke.Common;
 using Nuke.Common.Tools.DotNet;
 using Plisky.Nuke.Fusion;
@@ -83,6 +82,7 @@ public partial class Build : NukeBuild {
     public Target ApplyVersion => _ => _
       .After(ConstructStep)
       .DependsOn(Initialise)
+      .Requires(() => Solution != null)
       .Before(Compile)
       .Executes(() => {
           if (settings == null) {
@@ -90,96 +90,65 @@ public partial class Build : NukeBuild {
               throw new InvalidOperationException("The settings must be set");
           }
 
-          if (Solution == null) {
-              Log.Error("Build>ApplyVersion>Solution is null.");
-              throw new InvalidOperationException("The solution must be set");
-          }
-
-          bool dryRunMode = false;
-
-          if (IsLocalBuild) {
-              // Passive Get Current Version
-              Log.Information("Local Build - Versioning Set To Dry Run");
-              dryRunMode = true;
-          }
+          bool dryRunMode = IsLocalBuild;
 
           string versioningType = "Pre-Release";
-          string versionStoreFile = settings.VersioningPreReleasePersistanceToken;
+          string vtFile = settings.VersioningPreReleasePersistanceToken;
           if (!PreRelease) {
-              versionStoreFile = settings.VersioningPersistanceToken;
+              vtFile = settings.VersioningPersistanceToken;
               versioningType = "Release";
           }
 
-          Log.Information($"[Versioning]{versioningType} versioning displaying curent version number.");
+          Log.Information($"[Versioning] {versioningType} versioning starts. DryRun = {dryRunMode}");
 
           var vc = new VersonifyTasks();
-          vc.PassiveCommand(s => s
-              .SetVersionPersistanceValue(versionStoreFile)
-              .SetOutputStyle("azdo-nf")
-              .SetRoot(Solution.Directory)
-          );
 
-          var mmPath = settings.DependenciesDirectory / "automation";
-          mmPath /= "autoversion.txt";
+          var mmPathBase = settings.DependenciesDirectory / "automation";
+          var mmPath = mmPathBase / "autoversion.txt";
 
           vc.FileUpdateCommand(s => s
-              .SetVersionPersistanceValue(versionStoreFile)
+              .SetVersionPersistanceValue(vtFile)
               .AddMultimatchFile(mmPath)
-              .SetDebug(false)
               .PerformIncrement(true)
-              .SetOutputStyle("azdo-nf")
+              .SetOutputStyle("console-nf")
               .AsDryRun(dryRunMode)
               .SetRoot(Solution.Directory)
           );
+
+          Log.Information($"[Versioning] {versioningType} Incremented, updated files.({vc.VersionLiteral})");
           FullVersionNumber = vc.VersionLiteral;
-          Log.Information($"Version applied:{vc.VersionLiteral}");
-
-          // BUG LFY-30.  vc.VersionLiteral is not set to the FileUpdateCommand output so have queued another passive to fix this.
-
-          vc.PassiveCommand(s => s
-             .SetVersionPersistanceValue(versionStoreFile)
-             .SetOutputStyle("azdo")
-             .SetRoot(Solution.Directory)
-         );
-
-          Log.Information($"[Versioning]{versioningType} Increment and Update Exsiting Files.({vc.VersionLiteral})");
 
           if (!PreRelease) {
-              // Hack.  Curently the return from versonify is not set to be different display types, we need 3 digit for semver so hacking the last digit off.
-
-              int periodCount = 0;
-              string verNumberToUse = string.Empty;
-              foreach (char c in vc.VersionLiteral) {
-                  if (c == '.') {
-                      if (periodCount == 2) {
-                          break;
-                      }
-                      periodCount++;
-                  }
-
-                  verNumberToUse += c;
-              }
-
-              while (periodCount < 2) {
-                  verNumberToUse += ".0";
-                  periodCount++;
-              }
-
-              b.Assert.True(verNumberToUse.Count(x => x == '.') == 2, $"The version number ({verNumberToUse}) should be in the format N.N.N.");
-              Log.Information($"[Versioning]{versioningType} Applying release version number to pre-release data. ({vc.VersionLiteral} > {verNumberToUse})");
-
-              vc.OverrideCommand(s => s
-                  .SetVersionPersistanceValue(settings.VersioningPreReleasePersistanceToken)
-                  .SetOutputStyle("azdo-nf")
-                  .AsDryRun(dryRunMode)
-                  .SetRoot(Solution.Directory)
-                  .SetQuickValue(verNumberToUse)
-              );
+              UpdatePreReleaseVersionNumber(dryRunMode, versioningType, vc, mmPathBase);
           }
-
-          FullVersionNumber = vc.VersionLiteral;
-          Log.Information($"[Versioning]Version applied:{vc.VersionLiteral}");
       });
+
+
+    private void UpdatePreReleaseVersionNumber(bool dryRunMode, string versioningType, VersonifyTasks vc, Nuke.Common.IO.AbsolutePath mmPathBase) {
+        Log.Information($"[Versioning] {versioningType} Applying release version number to pre-release data. ({vc.VersionLiteral}) ");
+
+        // Once the release version changes we need to update the pre-release version numbers to match the released version otherwise it will still
+        // think its on the old version base.  The file update here is set to dummy files just so that the version store is updated. This will catch
+        // an edge case where two release versions occur.
+
+        vc.OverrideCommand(s => s
+            .SetVersionPersistanceValue(settings.VersioningPreReleasePersistanceToken)
+            .SetOutputStyle("console-nf")
+            .AsDryRun(dryRunMode)
+            .SetRoot(Solution.Directory)
+            .SetQuickValue("..+")
+        );
+
+        var nmPath = mmPathBase / "noversion.txt";
+        vc.FileUpdateCommand(s => s
+            .SetVersionPersistanceValue(settings.VersioningPreReleasePersistanceToken)
+            .SetOutputStyle("console-nf")
+            .AddMultimatchFile(nmPath)
+            .PerformIncrement(true)
+            .AsDryRun(dryRunMode)
+            .SetRoot(Solution.Directory / "_Dependencies" / "Utils")
+        );
+    }
 
     private Target Compile => _ => _
         .Before(ExamineStep)
