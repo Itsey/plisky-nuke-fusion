@@ -19,7 +19,7 @@ public class MollycoddleSettings : ToolOptions {
 
     public bool RuleHelp { get; set; }
 
-    public string Formatter { get; set; } = "plain";
+    public string Formatter { get; set; } = "default";
 
     public string PrimaryRoot { get; set; }
 

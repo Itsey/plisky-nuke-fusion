@@ -78,7 +78,9 @@ public partial class Build : NukeBuild {
               throw new InvalidOperationException("The solution must be set");
           }
 
-          Bilge.AddHandler(new TCPHandler("127.0.0.1", 9060, true));
+          var th = new TCPHandler("127.0.0.1", 9060, true);
+          th.SetFormatter(new FlimFlamV4Formatter());
+          Bilge.AddHandler(th);
           Bilge.SetConfigurationResolver((a, b) => {
               return System.Diagnostics.SourceLevels.Verbose;
           });
