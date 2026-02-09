@@ -71,6 +71,7 @@ public partial class Build : NukeBuild {
           var vc = new VersonifyTasks();
           vc.PassiveCommand(s => s
           .SetVersionPersistanceValue(versioningToken)
+          .SetZeroReturnCode(true)
           .SetOutputStyle("con-nf")
           .SetRoot(Solution.Directory));
 

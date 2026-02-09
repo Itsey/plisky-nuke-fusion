@@ -1,4 +1,4 @@
 ﻿**/src/**/Plisky.Nuke.Fusion.csproj|StdAssembly
 **/src/**/Plisky.Nuke.Fusion.csproj|StdInformational
 **/src/**/Plisky.Nuke.Fusion.csproj|StdFile
-**/src/**/Nuke-Fusion.nuspec|TextFile
+**/src/**/changelog.md|TextFile

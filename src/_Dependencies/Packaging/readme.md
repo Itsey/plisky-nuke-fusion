@@ -6,6 +6,9 @@ This is a support package for integration Plisky Code Craft tools with Nuke buil
 
 ## Key Features
 
+Wrapper support for Versioning.
+Wrapper support for Mollycoddle Linting.
+Wrapper support for Discord Webhooks.
 
 ## Usage.
 

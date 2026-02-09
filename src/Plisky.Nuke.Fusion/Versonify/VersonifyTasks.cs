@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using global::Nuke.Common.Tooling;
 
 public class VersonifyTasks : ToolTasks, IRequirePathTool {
+    public const int VERSONIFY_AUSTEN_COMPAT_CONSTANT = 200;
+
     public VersonifyTasks() {
-        this.GetLogger().Invoke(OutputType.Std,$"{PnfUtilities.GetPnfString()} [Versonify Tasks]");
+        this.GetLogger().Invoke(OutputType.Std, $"{PnfUtilities.GetPnfString()} [Versonify Tasks]");
     }
 
     public static IReadOnlyCollection<Output> Versonify(ArgumentStringHandler arguments, string? workingDirectory = null, IReadOnlyDictionary<string, string>? environmentVariables = null, int? timeout = null, bool? logOutput = null, bool? logInvocation = null, Action<OutputType, string>? logger = null, Func<IProcess, object>? exitHandler = null)
@@ -35,11 +37,27 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
         string tpth = settings.GetPath();
         SetToolPath(tpth);
 
+        int compatibilityLevel = 0;
+
+        Run("--QQpnf", exitHandler: (process) => {
+            if (process.ExitCode != 0) {
+                this.GetLogger().Invoke(OutputType.Std, $"Versonify Compat Code: {process.ExitCode}");
+                compatibilityLevel = process.ExitCode;
+            }
+            return process;
+        });
 
         if (replaceCommandLine != null) {
             result = Run(replaceCommandLine);
         } else {
-            result = Run(settings.GetArgsString());
+            switch (compatibilityLevel) {
+                case VERSONIFY_AUSTEN_COMPAT_CONSTANT: result = Run(settings.GetArgsAsString200()); break;
+                default:
+                    GetLogger().Invoke(OutputType.Std, $"Warning.  Versonify is out of date, you should update your tools package.");
+                    result = Run(settings.GetArgsString());
+                    break;
+
+            }
         }
 
         string[] lines = result.StdToText().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
