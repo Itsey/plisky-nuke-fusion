@@ -7,8 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyVersion>0.3</AssemblyVersion>
-    <Version>0.3.0-pre.0.3</Version>
-    <FileVersion>0.3.0-pre.0.3</FileVersion>
+    <Version>0.0.0.0</Version>
+    <FileVersion>0.0.0.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Summary>Plisky.Nuke.Fusion, providing plisky library support to the Nuke build engine.</Summary>

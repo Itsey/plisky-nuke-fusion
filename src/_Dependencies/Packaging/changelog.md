@@ -1,10 +1,8 @@
 ﻿Plisky.Nuke.Fusion Change Log. 
  
-⬆️ V XXX-VERSION-XXX - Austen Compatibility Release.
-  - ✅ Feature - Updated Versonify support to be compatible with Austen.
+⬆️ V XXX-VERSION3-XXX - Austen Compatibility Release.
+  - ✅ Feature - Updated Versonify support to be compatible with Austen release.
   
-  
-
 V0.3 
   * Fix to support Nuke 9.04
 
