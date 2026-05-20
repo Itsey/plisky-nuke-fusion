@@ -147,6 +147,7 @@ public partial class Build : NukeBuild {
             .AddMultimatchFile(nmPath)
             .PerformIncrement(true)
             .AsDryRun(dryRunMode)
+            .SetZeroReturnCode(true)
             .SetRoot(Solution.Directory / "_Dependencies" / "Utils")
         );
     }
