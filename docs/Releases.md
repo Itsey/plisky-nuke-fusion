@@ -8,7 +8,9 @@ This is a dotnet tool which serves as a wrapper around the tools that support bu
 
 ## Release Notes
 
-### 0.3.7
+### 0.3.9
+
+Note 0.3.9 had the issues where the major number could not increment the pre-release therefore failed builds bumped the number so 3.6/3.7/3.8 were not real releases but failed builds. 
 
 Added .net 10 into the package but no functional changes, this should do a full release with the features required to support the non zero exit code.
 
