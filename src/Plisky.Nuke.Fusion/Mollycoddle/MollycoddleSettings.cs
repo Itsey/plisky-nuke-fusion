@@ -26,13 +26,14 @@ public class MollycoddleSettings : ToolOptions {
     public string RulesFile { get; set; }
 
 
-
+    public string? Framework { get; set; }
 
     public string GetPath() {
+        string? fw = string.IsNullOrEmpty(Framework) ? null : Framework;
         return NuGetToolPathResolver.GetPackageExecutable(
-          packageId: "Plisky.Mollycoddle",
-          packageExecutable: "Mollycoddle.exe|mollycoddle.dll",
-          framework: "9.0");
+            packageId: "Plisky.Mollycoddle",
+            packageExecutable: "Mollycoddle.exe|mollycoddle.dll",
+            framework: fw);
     }
 
 

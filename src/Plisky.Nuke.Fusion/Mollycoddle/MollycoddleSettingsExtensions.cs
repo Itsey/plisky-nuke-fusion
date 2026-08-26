@@ -63,5 +63,8 @@ public static partial class MollycoddleSettingsExtensions {
         toolSettings.Formatter = newFormatterValue;
         return toolSettings;
     }
-
+    public static T SetFramework<T>(this T toolSettings, string framework) where T : MollycoddleSettings {
+        toolSettings.Framework = framework;
+        return toolSettings;
+    }
 }
