@@ -7,6 +7,7 @@ using global::Nuke.Common.Tooling;
 
 public class VersonifyTasks : ToolTasks, IRequirePathTool {
     public const int VERSONIFY_AUSTEN_COMPAT_CONSTANT = 200;
+    public const int VERSONIFY_BRONTE_COMPAT_CONSTANT = 201;
 
     public VersonifyTasks() {
         this.GetLogger().Invoke(OutputType.Std, $"{PnfUtilities.GetPnfString()} [Versonify Tasks]");
@@ -51,9 +52,10 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
             result = Run(replaceCommandLine);
         } else {
             switch (compatibilityLevel) {
+                case VERSONIFY_BRONTE_COMPAT_CONSTANT: result = Run(settings.GetArgsAsString201()); break;
                 case VERSONIFY_AUSTEN_COMPAT_CONSTANT: result = Run(settings.GetArgsAsString200()); break;
                 default:
-                    GetLogger().Invoke(OutputType.Std, $"Warning.  Versonify is out of date, you should update your tools package.");
+                    GetLogger().Invoke(OutputType.Std, $"Warning.  Versonify is out of date, you should update your tools package. CL:{compatibilityLevel}");
                     result = Run(settings.GetArgsString());
                     break;
 

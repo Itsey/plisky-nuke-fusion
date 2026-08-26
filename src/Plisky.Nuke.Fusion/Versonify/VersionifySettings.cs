@@ -87,6 +87,54 @@ public class VersonifySettings : ToolOptions {
           framework: fw);
     }
 
+    public ArgumentStringHandler GetArgsAsString201() {
+        // Compatible with V1.1 Bronte release of Versonify.  This is the current version as the time of writing this code.
+        // Indicated by 201 level return code from versonify.
+
+        var result = new ArgumentStringHandler(0, 0, out _);
+        result.AppendLiteral(Command);
+        result.AppendLiteral($" --version-source={VersionPersistanceValue}");
+        result.AppendLiteral($" --root={Root}");
+
+        if (!string.IsNullOrEmpty(QuickValue)) {
+            result.AppendLiteral($" --quick-value={QuickValue}");
+        }
+
+        if (!string.IsNullOrEmpty(MultiMatchFile)) {
+            result.AppendLiteral($" --min-match={MultiMatchFile}");
+        }
+
+        if (Debug) {
+            result.AppendLiteral(" -debug");
+        }
+
+        if (DryRun) {
+            result.AppendLiteral(" --dry-run");
+        }
+
+        if (PerformIncrement) {
+            result.AppendLiteral(" --increment");
+        }
+
+        if (AlwaysReturnZero) {
+            result.AppendLiteral(" --no-error");
+        }
+
+        if (!string.IsNullOrEmpty(TraceConfiguration)) {
+            result.AppendLiteral($" --trace={TraceConfiguration}");
+        }
+
+        if (OutputStyle != string.Empty) {
+            if (!OutputStyle.EndsWith("-nf")) {
+                OutputStyle += "-nf";
+            }
+            result.AppendLiteral($" --output={OutputStyle}");
+        } else {
+            result.AppendLiteral(" --output=con-nf");
+        }
+        return result;
+    }
+
     public ArgumentStringHandler GetArgsAsString200() {
         // Compatible with V1.0.2 of Versonify.  This is the current version as the time of writing this code.
         // Indicated by 200 level return code from versonify.
