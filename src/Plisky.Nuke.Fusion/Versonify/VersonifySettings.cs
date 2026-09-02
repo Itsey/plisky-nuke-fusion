@@ -11,7 +11,7 @@ public class VersonifySettings : ToolOptions {
     public bool AlwaysReturnZero { get; set; } = false;
 
     /// <summary>
-    /// Corresponds to -O in the versionify tool.  Can be env, con, file, np, npo, azdo
+    /// Corresponds to -O in the versonify tool.  Can be env, con, file, np, npo, azdo
     /// </summary>
     public string OutputStyle { get; set; } = string.Empty;
 
@@ -72,8 +72,6 @@ public class VersonifySettings : ToolOptions {
     public void SetCommand(VersonifyCommand cmd) {
         Command = "-Command=" + cmd.ToString();
     }
-
-    //public override string ProcessToolPath => GetPath();
 
     public bool DryRun { get; set; }
 
