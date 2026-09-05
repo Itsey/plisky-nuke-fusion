@@ -20,7 +20,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://itsey.github.io/</PackageProjectUrl>
     <Description>Plisky.Nuke.Fusion providing plisky tool support to the Nuke build engine..</Description>
-    <Copyright>Copyright 2025</Copyright>
+    <Copyright>Copyright 2026</Copyright>
     <PackageTags>nuke;cli;build</PackageTags>
     <PackageIcon>pnf-icon.png</PackageIcon>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -39,8 +39,15 @@
       <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)\..\_Dependencies\Packaging\changelog.md"))</PackageReleaseNotes>
     </PropertyGroup>
   </Target>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="Nuke.Common" Version="10.1.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net10.0'">
+    <PackageReference Include="Nuke.Common" Version="9.0.4" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="4.0.2" />
-    <PackageReference Include="Nuke.Common" Version="9.0.4" />
+    <PackageReference Include="NuGet.Packaging" Version="7.9.0" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.11" />
   </ItemGroup>
 </Project>

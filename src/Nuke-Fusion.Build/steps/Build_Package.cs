@@ -1,8 +1,6 @@
-﻿
-using System;
-using System.IO;
+﻿using System;
 using Nuke.Common;
-using Nuke.Common.IO;
+using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.NuGet;
 using Serilog;
@@ -27,48 +25,9 @@ public partial class Build : NukeBuild {
                 throw new InvalidOperationException("The settings must be set");
             }
 
-
-            var project = Solution.GetProject(settings.MainProjectName);
-
-            if (project == null) { throw new InvalidOperationException($"Publish -> GetProject -> Project {settings.MainProjectName} was not found."); }
-
-            var publishDirectory = settings.ArtifactsDirectory + "\\publish\\lib";
+            var project = Solution.GetProject(settings.MainProjectName)
+                ?? throw new InvalidOperationException($"Publish -> GetProject -> Project {settings.MainProjectName} was not found.");
             var nugetStructure = settings.ArtifactsDirectory + "\\nuget";
-
-            foreach (var l in new[] { "net8.0", "net9.0" }) {
-                DotNetTasks.DotNetPublish(s => s
-                  .SetProject(project)
-                  .SetConfiguration(Configuration)
-                  .SetOutput(Path.Combine(publishDirectory, l))
-                  .SetFramework(l)
-                  .EnableNoRestore()
-                  .EnableNoBuild()
-                );
-            }
-            //var readmeFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\readme.md";
-            //var targetdir = nugetStructure + "\\readme.md";
-            //publishDirectory.CopyToDirectory(nugetStructure, ExistsPolicy.MergeAndOverwrite);
-
-            ////targetdir.Copy(targetdir, ExistsPolicy.FileOverwrite);
-            //readmeFile.Copy(targetdir, ExistsPolicy.FileOverwrite);
-
-            //var nugetPackageFile = Solution.GetProject("_Dependencies").Directory + "\\packaging\\nuke-fusion.nuspec";
-            //var destDir = settings.ArtifactsDirectory + "\\nuke-fusion.nuspec";
-            //nugetPackageFile.Copy(destDir, ExistsPolicy.FileOverwrite);
-
-
-
-            //NuGetTasks.NuGetPack(s => s
-            //  .SetTargetPath(settings.ArtifactsDirectory + "\\nuke-fusion.nuspec")
-            //  .SetOutputDirectory(settings.ArtifactsDirectory));
-
-
-
-            // var project = Solution.GetProject("Versonify");
-            //if (project == null) { throw new InvalidOperationException("Project not found"); }
-
-            //var publishDirectory = settings.ArtifactsDirectory + "\\publish\\";
-            //var nugetStructure = settings.ArtifactsDirectory + "\\nuget";
 
             DotNetTasks.DotNetPack(s => s
               .SetProject(project)
@@ -77,10 +36,5 @@ public partial class Build : NukeBuild {
               .EnableNoBuild()
               .EnableNoRestore()
             );
-
         });
-
-
-
 }
-
