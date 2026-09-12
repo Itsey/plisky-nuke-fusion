@@ -1,5 +1,4 @@
-﻿
-namespace Plisky.Nuke.Fusion;
+﻿namespace Plisky.Nuke.Fusion;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
     public const int VERSONIFY_BRONTE_COMPAT_CONSTANT = 201;
 
     public VersonifyTasks() {
-        this.GetLogger().Invoke(OutputType.Std, $"{PnfUtilities.GetPnfString()} [Versonify Tasks]");
+        GetLogger().Invoke(OutputType.Std, $"{PnfUtilities.GetPnfString()} [Versonify Tasks]");
     }
 
     public static IReadOnlyCollection<Output> Versonify(ArgumentStringHandler arguments, string? workingDirectory = null, IReadOnlyDictionary<string, string>? environmentVariables = null, int? timeout = null, bool? logOutput = null, bool? logInvocation = null, Action<OutputType, string>? logger = null, Func<IProcess, object>? exitHandler = null)
@@ -28,71 +27,133 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
 
 
     public IReadOnlyCollection<Output> ExecuteVersonify(VersonifySettings? settings, VersonifyCommand command = VersonifyCommand.Unknown, string? replaceCommandLine = null) {
-        IReadOnlyCollection<Output> result;
+        settings ??= new VersonifySettings();
+        ValidateSettings(settings, command);
+        SetCommand(settings, command);
+        SetToolPath(settings.GetPath());
 
-        settings = settings ?? new VersonifySettings();
+        var arguments = GetArguments(settings, replaceCommandLine);
+        var result = RunCommand(arguments, command);
+        ParseVersionOutput(result.StdToText());
+        ValidateVersionOutput(command, VersionLiteral, GetOutputText(result));
+        return result;
+    }
 
+    private static void ValidateSettings(VersonifySettings settings, VersonifyCommand command) {
+        if (command == VersonifyCommand.Passive && settings.AlwaysReturnZero) {
+            throw new InvalidOperationException("Versonify Passive must not use --no-error because version-query failures must fail the build.");
+        }
+    }
+
+    private static void SetCommand(VersonifySettings settings, VersonifyCommand command) {
         if (command != VersonifyCommand.Unknown) {
             settings.SetCommand(command);
         }
-        string tpth = settings.GetPath();
-        SetToolPath(tpth);
+    }
 
+    private ArgumentStringHandler GetArguments(VersonifySettings settings, string? replaceCommandLine) {
+        if (replaceCommandLine != null) {
+            var replacementArguments = new ArgumentStringHandler(0, 0, out _);
+            replacementArguments.AppendLiteral(replaceCommandLine);
+            return replacementArguments;
+        }
+
+        int compatibilityLevel = GetCompatibilityLevel();
+        return compatibilityLevel switch {
+            VERSONIFY_BRONTE_COMPAT_CONSTANT => settings.GetArgsAsString201(),
+            VERSONIFY_AUSTEN_COMPAT_CONSTANT => settings.GetArgsAsString200(),
+            _ => GetLegacyArguments(settings, compatibilityLevel)
+        };
+    }
+
+    private int GetCompatibilityLevel() {
         int compatibilityLevel = 0;
-
-        Run("--QQpnf", exitHandler: (process) => {
+        Run("--QQpnf", exitHandler: process => {
             if (process.ExitCode != 0) {
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Compat Code: {process.ExitCode}");
+                GetLogger().Invoke(OutputType.Std, $"Versonify Compat Code: {process.ExitCode}");
                 compatibilityLevel = process.ExitCode;
             }
             return process;
         });
+        return compatibilityLevel;
+    }
 
-        if (replaceCommandLine != null) {
-            result = Run(replaceCommandLine);
-        } else {
-            switch (compatibilityLevel) {
-                case VERSONIFY_BRONTE_COMPAT_CONSTANT: result = Run(settings.GetArgsAsString201()); break;
-                case VERSONIFY_AUSTEN_COMPAT_CONSTANT: result = Run(settings.GetArgsAsString200()); break;
-                default:
-                    GetLogger().Invoke(OutputType.Std, $"Warning.  Versonify is out of date, you should update your tools package. CL:{compatibilityLevel}");
-                    result = Run(settings.GetArgsString());
-                    break;
+    private IReadOnlyCollection<Output> RunCommand(ArgumentStringHandler arguments, VersonifyCommand command) {
+        int exitCode = 0;
+        var result = Run(arguments, exitHandler: process => {
+            exitCode = process.ExitCode;
+            return process;
+        });
 
-            }
-        }
-
-        string[] lines = result.StdToText().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        foreach (string l in lines) {
-            if (l.StartsWith("PNFV]")) {
-                VersionLiteral = l.Substring(5);
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned Default Version As: {VersionLiteral}");
-            } else if (l.StartsWith("PNF2]")) {
-                ShortVersion = l.Substring(5);
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned Short Version As: {ShortVersion}");
-            } else if (l.StartsWith("PNFN]")) {
-                ReleaseName = l.Substring(5);
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned ReleaseName As: {ReleaseName}");
-            } else if (l.StartsWith("PNF3]")) {
-                ThreeDigit = l.Substring(5);
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned ThreeDigit As: {ThreeDigit}");
-            } else if (l.StartsWith("PN4D]")) {
-                FourDigitNumeric = l.Substring(5);
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned FourDigitNumeric As: {FourDigitNumeric}");
-            } else if (l.StartsWith("PNQF]")) {
-                QueuedFull = l.Substring(5);
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned Queued Full Version As: {QueuedFull}");
-            } else if (l.StartsWith("PN3D]")) {
-                ThreeDigitNumeric = l.Substring(5);
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned ThreeDigitNumeric As: {ThreeDigitNumeric}");
-            } else if (l.StartsWith("PNF4]")) {
-                FourDigit = l.Substring(5);
-                this.GetLogger().Invoke(OutputType.Std, $"Versonify Returned FourDigit As:{FourDigit} ");
-            }
-
-        }
+        ThrowIfCommandFailed(command, exitCode, GetOutputText(result));
         return result;
     }
+
+    private void ParseVersionOutput(string output) {
+        var values = VersonifyOutputParser.Parse(output);
+        ShortVersion = values.ShortVersion;
+        ReleaseName = values.ReleaseName;
+        VersionLiteral = values.VersionLiteral;
+        FourDigitNumeric = values.FourDigitNumeric;
+        ThreeDigit = values.ThreeDigit;
+        QueuedFull = values.QueuedFull;
+        ThreeDigitNumeric = values.ThreeDigitNumeric;
+        FourDigit = values.FourDigit;
+
+        if (values.FoundMarkers.Contains("PNFV]")) {
+            GetLogger().Invoke(OutputType.Std, $"Versonify Returned Default Version As: {VersionLiteral}");
+        }
+        if (values.FoundMarkers.Contains("PNF2]")) {
+            GetLogger().Invoke(OutputType.Std, $"Versonify Returned Short Version As: {ShortVersion}");
+        }
+        if (values.FoundMarkers.Contains("PNFN]")) {
+            GetLogger().Invoke(OutputType.Std, $"Versonify Returned ReleaseName As: {ReleaseName}");
+        }
+        if (values.FoundMarkers.Contains("PNF3]")) {
+            GetLogger().Invoke(OutputType.Std, $"Versonify Returned ThreeDigit As: {ThreeDigit}");
+        }
+        if (values.FoundMarkers.Contains("PN4D]")) {
+            GetLogger().Invoke(OutputType.Std, $"Versonify Returned FourDigitNumeric As: {FourDigitNumeric}");
+        }
+        if (values.FoundMarkers.Contains("PNQF]")) {
+            GetLogger().Invoke(OutputType.Std, $"Versonify Returned Queued Full Version As: {QueuedFull}");
+        }
+        if (values.FoundMarkers.Contains("PN3D]")) {
+            GetLogger().Invoke(OutputType.Std, $"Versonify Returned ThreeDigitNumeric As: {ThreeDigitNumeric}");
+        }
+        if (values.FoundMarkers.Contains("PNF4]")) {
+            GetLogger().Invoke(OutputType.Std, $"Versonify Returned FourDigit As:{FourDigit} ");
+        }
+    }
+
+    internal static void ValidateVersionOutput(VersonifyCommand command, string versionLiteral, string output) {
+        if (RequiresVersion(command) && string.IsNullOrWhiteSpace(versionLiteral)) {
+            throw new InvalidOperationException(
+                $"Versonify '{command}' completed successfully but did not return a PNFV] version value.{Environment.NewLine}" +
+                $"Output:{Environment.NewLine}{output}");
+        }
+    }
+
+    internal static InvalidOperationException CreateCommandFailureException(VersonifyCommand command, int exitCode, string output) => new(
+        $"Versonify '{command}' failed with exit code {exitCode}.{Environment.NewLine}" +
+        $"Output:{Environment.NewLine}{output}");
+
+    internal static void ThrowIfCommandFailed(VersonifyCommand command, int exitCode, string output) {
+        if (exitCode != 0) {
+            throw CreateCommandFailureException(command, exitCode, output);
+        }
+    }
+
+    private ArgumentStringHandler GetLegacyArguments(VersonifySettings settings, int compatibilityLevel) {
+        GetLogger().Invoke(OutputType.Std, $"Warning.  Versonify is out of date, you should update your tools package. CL:{compatibilityLevel}");
+        return settings.GetArgsString();
+    }
+
+    internal static bool RequiresVersion(VersonifyCommand command) =>
+        command is VersonifyCommand.Passive or VersonifyCommand.UpdateFiles;
+
+    private static string GetOutputText(IReadOnlyCollection<Output> output) =>
+        string.Join(Environment.NewLine, output.Select(line => $"{line.Type}: {line.Text}"));
 
     public string ShortVersion { get; set; } = string.Empty;
     public string ReleaseName { get; set; } = string.Empty;

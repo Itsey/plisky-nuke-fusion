@@ -40,4 +40,14 @@ public class TaskValidationTests {
         Should.Throw<InvalidOperationException>(() =>
             tasks.PassiveCommand((Configure<VersonifySettings>)null!));
     }
+
+    [Fact]
+    public void VersonifyTasks_PassiveCommand_ShouldRejectAlwaysReturnZero() {
+        var tasks = new VersonifyTasks();
+
+        var exception = Should.Throw<InvalidOperationException>(() =>
+            tasks.PassiveCommand(settings => settings.SetZeroReturnCode(true)));
+
+        exception.Message.ShouldContain("--no-error");
+    }
 }

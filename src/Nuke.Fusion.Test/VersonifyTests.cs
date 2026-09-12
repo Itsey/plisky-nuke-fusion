@@ -2,6 +2,85 @@ namespace Nuke.Fusion.Test;
 
 public class VersonifyTests {
     [Fact]
+    public void VersonifyOutputParser_Parse_ShouldExtractAllSupportedMarkers() {
+        var result = VersonifyOutputParser.Parse("""
+            PNFV]1.2.3.4
+            PNF2]1.2
+            PNFN]beta
+            PNF3]1.2.3
+            PN4D]1.2.3.4
+            PNQF]1.2.3.5
+            PN3D]123
+            PNF4]1.2.3.4-beta
+            """);
+
+        result.VersionLiteral.ShouldBe("1.2.3.4");
+        result.ShortVersion.ShouldBe("1.2");
+        result.ReleaseName.ShouldBe("beta");
+        result.ThreeDigit.ShouldBe("1.2.3");
+        result.FourDigitNumeric.ShouldBe("1.2.3.4");
+        result.QueuedFull.ShouldBe("1.2.3.5");
+        result.ThreeDigitNumeric.ShouldBe("123");
+        result.FourDigit.ShouldBe("1.2.3.4-beta");
+    }
+
+    [Fact]
+    public void VersonifyOutputParser_Parse_ShouldIgnoreUnrecognisedOutput() {
+        var result = VersonifyOutputParser.Parse("Versonify completed without version output.");
+
+        result.VersionLiteral.ShouldBeEmpty();
+        result.FoundMarkers.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void VersonifyOutputParser_Parse_ShouldUseTheLastValueForRepeatedMarkers() {
+        var result = VersonifyOutputParser.Parse("PNFV]1.2.3.4\r\nPNFV]1.2.3.5");
+
+        result.VersionLiteral.ShouldBe("1.2.3.5");
+    }
+
+    [Theory]
+    [InlineData(VersonifyCommand.Passive)]
+    [InlineData(VersonifyCommand.UpdateFiles)]
+    public void VersonifyTasks_ValidateVersionOutput_ShouldRejectMissingRequiredVersion(VersonifyCommand command) {
+        var exception = Should.Throw<InvalidOperationException>(() =>
+            VersonifyTasks.ValidateVersionOutput(command, string.Empty, "No version marker"));
+
+        exception.Message.ShouldContain("did not return a PNFV] version value");
+        exception.Message.ShouldContain("No version marker");
+    }
+
+    [Theory]
+    [InlineData(VersonifyCommand.Override)]
+    [InlineData(VersonifyCommand.CreateVersion)]
+    [InlineData(VersonifyCommand.Unknown)]
+    public void VersonifyTasks_ValidateVersionOutput_ShouldAllowCommandsWithoutVersionOutput(VersonifyCommand command) {
+        Should.NotThrow(() => VersonifyTasks.ValidateVersionOutput(command, string.Empty, "No version marker"));
+    }
+
+    [Fact]
+    public void VersonifyTasks_ThrowIfCommandFailed_ShouldThrowForNonZeroExitCode() {
+        var exception = Should.Throw<InvalidOperationException>(() =>
+            VersonifyTasks.ThrowIfCommandFailed(
+                VersonifyCommand.Passive,
+                7,
+                "Std: unable to read version store\nErr: access denied"));
+
+        exception.Message.ShouldContain("Versonify 'Passive' failed with exit code 7.");
+        exception.Message.ShouldContain("Std: unable to read version store");
+        exception.Message.ShouldContain("Err: access denied");
+    }
+
+    [Fact]
+    public void VersonifyTasks_ThrowIfCommandFailed_ShouldAllowZeroExitCode() {
+        Should.NotThrow(() =>
+            VersonifyTasks.ThrowIfCommandFailed(
+                VersonifyCommand.Passive,
+                0,
+                "PNFV]1.2.3.4"));
+    }
+
+    [Fact]
     public void VersonifySettings_GetArgsAsString201_ShouldUseBrontesArgumentNames() {
         var settings = new VersonifySettings {
             Command = "-Command=Passive",
