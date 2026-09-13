@@ -124,6 +124,14 @@
             "Release"
           ]
         },
+        "IsMajor": {
+          "type": "boolean",
+          "description": "Increment the major version digit instead of patch"
+        },
+        "IsMinor": {
+          "type": "boolean",
+          "description": "Increment the minor version digit instead of patch"
+        },
         "PreRelease": {
           "type": "boolean",
           "description": "PreRelease will only release a pre-release verison of the package.  Uses pre-release versioning"

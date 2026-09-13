@@ -12,7 +12,7 @@ using Plisky.Diagnostics.Listeners;
 using Serilog;
 
 public partial class Build : NukeBuild {
-    protected Bilge b = new Bilge("Pnf-Build");
+    protected Bilge b = new("Pnf-Build");
 
     public static int Main() => Execute<Build>(x => x.Compile);
 
@@ -27,6 +27,12 @@ public partial class Build : NukeBuild {
 
     [Parameter("PreRelease will only release a pre-release verison of the package.  Uses pre-release versioning.")]
     private readonly bool PreRelease = true;
+
+    [Parameter("Increment the major version digit instead of patch.")]
+    private readonly bool IsMajor = false;
+
+    [Parameter("Increment the minor version digit instead of patch.")]
+    private readonly bool IsMinor = false;
 
     [GitRepository]
     private readonly GitRepository GitRepository;

@@ -107,6 +107,26 @@ public partial class Build : NukeBuild {
           var mmPathBase = settings.DependenciesDirectory / "automation";
           var mmPath = mmPathBase / "autoversion.txt";
 
+          if (IsMajor) {
+              Log.Information("[Versioning] Major version increment requested.");
+              vc.OverrideCommand(s => s
+                  .SetVersionPersistanceValue(vtFile)
+                  .SetOutputStyle("console-nf")
+                  .AsDryRun(dryRunMode)
+                  .SetRoot(Solution.Directory)
+                  .SetQuickValue("+")
+              );
+          } else if (IsMinor) {
+              Log.Information("[Versioning] Minor version increment requested.");
+              vc.OverrideCommand(s => s
+                  .SetVersionPersistanceValue(vtFile)
+                  .SetOutputStyle("console-nf")
+                  .AsDryRun(dryRunMode)
+                  .SetRoot(Solution.Directory)
+                  .SetQuickValue(".+")
+              );
+          }
+
           vc.FileUpdateCommand(s => s
               .SetVersionPersistanceValue(vtFile)
               .AddMultimatchFile(mmPath)
@@ -132,12 +152,19 @@ public partial class Build : NukeBuild {
         // think its on the old version base.  The file update here is set to dummy files just so that the version store is updated. This will catch
         // an edge case where two release versions occur.
 
+        string quickVal = "..+";
+        if (IsMajor) {
+            quickVal = "+";
+        } else if (IsMinor) {
+            quickVal = ".+";
+        }
+
         vc.OverrideCommand(s => s
             .SetVersionPersistanceValue(settings.VersioningPreReleasePersistanceToken)
             .SetOutputStyle("console-nf")
             .AsDryRun(dryRunMode)
             .SetRoot(Solution.Directory)
-            .SetQuickValue("..+")
+            .SetQuickValue(quickVal)
         );
 
         var nmPath = mmPathBase / "noversion.txt";
