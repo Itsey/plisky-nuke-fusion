@@ -5,6 +5,9 @@ using Plisky.Nuke.Fusion;
 using Serilog;
 
 public partial class Build : NukeBuild {
+    private const string MAJOR_QUICK_VALUE = "+.0.0";
+    private const string MINOR_QUICK_VALUE = ".+.0";
+    private const string PATCH_QUICK_VALUE = "..+";
 
     public string FullVersionNumber { get; set; } = string.Empty;
 
@@ -114,7 +117,7 @@ public partial class Build : NukeBuild {
                   .SetOutputStyle("console-nf")
                   .AsDryRun(dryRunMode)
                   .SetRoot(Solution.Directory)
-                  .SetQuickValue("+")
+                  .SetQuickValue(MAJOR_QUICK_VALUE)
               );
           } else if (IsMinor) {
               Log.Information("[Versioning] Minor version increment requested.");
@@ -123,7 +126,7 @@ public partial class Build : NukeBuild {
                   .SetOutputStyle("console-nf")
                   .AsDryRun(dryRunMode)
                   .SetRoot(Solution.Directory)
-                  .SetQuickValue(".+")
+                  .SetQuickValue(MINOR_QUICK_VALUE)
               );
           }
 
@@ -152,11 +155,11 @@ public partial class Build : NukeBuild {
         // think its on the old version base.  The file update here is set to dummy files just so that the version store is updated. This will catch
         // an edge case where two release versions occur.
 
-        string quickVal = "..+";
+        string quickVal = PATCH_QUICK_VALUE;
         if (IsMajor) {
-            quickVal = "+";
+            quickVal = MAJOR_QUICK_VALUE;
         } else if (IsMinor) {
-            quickVal = ".+";
+            quickVal = MINOR_QUICK_VALUE;
         }
 
         vc.OverrideCommand(s => s
@@ -190,6 +193,4 @@ public partial class Build : NukeBuild {
               .SetContinuousIntegrationBuild(IsServerBuild)
           );
         });
-
 }
-
