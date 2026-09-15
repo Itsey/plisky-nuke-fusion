@@ -12,7 +12,7 @@ using Plisky.Diagnostics.Listeners;
 using Serilog;
 
 public partial class Build : NukeBuild {
-    protected Bilge b = new("Pnf-Build");
+    protected Bilge b = new("Pff-Build");
 
     public static int Main() => Execute<Build>(x => x.Compile);
 
@@ -93,8 +93,8 @@ public partial class Build : NukeBuild {
 
           b = new Bilge("Nuke", tl: System.Diagnostics.SourceLevels.Verbose);
 
-          Bilge.Alert.Online("Pnf-Build");
-          b.Info.Log("Pnf Build Process Initialised, preparing Initialisation section.");
+          Bilge.Alert.Online("Pff-Build");
+          b.Info.Log("Pff Build Process Initialised, preparing Initialisation section.");
 
           var ap = RootDirectory.Parent / "src";
           ap = ap / "Plisky.Nuke.Fusion.sln";
@@ -103,7 +103,7 @@ public partial class Build : NukeBuild {
 
           settings = new LocalBuildConfig() {
               DependenciesDirectory = Solution.Projects.First(x => x.Name == "_Dependencies").Directory,
-              ArtifactsDirectory = Path.Combine(Path.GetTempPath(), "_build\\pnfbld\\"),
+              ArtifactsDirectory = Path.Combine(Path.GetTempPath(), "_build\\pffbld\\"),
               NonDestructive = false,
               MainProjectName = "Plisky.Fallout.Fusion",
               MollyPrimaryToken = "%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/primaryfiles/XXVERSIONNAMEXX/",

@@ -1,6 +1,11 @@
 ﻿Plisky.Fallout.Fusion Change Log. 
  
-⬆️ V XXX-VERSION3-XXX - Bronte & .NET 10 Compatibility Release.
+⬆️V XXX-VERSION3-XXX - Fallout Migration Release.
+ - ✅ Breaking Change - Renamed the package from Plisky.Nuke.Fusion to Plisky.Fallout.Fusion.
+ - ✅ Breaking Change - Migrated from the Nuke build engine to Fallout, the community-maintained fork of Nuke.
+ - ✅ Maintenance - Continued support for Mollycoddle, Versonify and Discord webhooks.
+
+V 0.4.0 - Bronte & .NET 10 Compatibility Release.
  - ✅ Feature - Added Framework property to MollycoddleSettings for target framework resolution.
  - ✅ Feature - Updated Versonify support to be compatible with Bronte release.
  - ✅ Fix - Hardened Versonify command execution and error handling.
@@ -21,4 +26,3 @@ V0
 * Initial version.
 
 See [https://itsey.github.io/](https://itsey.github.io/) for more information on the Plisky tools.
-

@@ -6,7 +6,7 @@ public class PffUtilitiesTests {
         string result = PffUtilities.GetPffString();
 
         result.ShouldNotBeNullOrWhiteSpace();
-        result.ShouldStartWith("[PNF] (");
+        result.ShouldStartWith("[PFF] (");
         result.ShouldEndWith(")");
     }
 
