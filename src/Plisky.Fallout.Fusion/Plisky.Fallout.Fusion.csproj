@@ -19,7 +19,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://itsey.github.io/</PackageProjectUrl>
-    <Description>Plisky.Fallout.Fusion providing plisky tool support to the Fallout build engine..</Description>
+    <Description>Plisky.Fallout.Fusion providing plisky tool support to the Fallout build engine.</Description>
     <Copyright>Copyright 2026</Copyright>
     <PackageTags>fallout;cli;build</PackageTags>
     <PackageIcon>pff-icon.png</PackageIcon>
@@ -42,6 +42,5 @@
   <ItemGroup>
     <PackageReference Include="Fallout.Common" Version="10.4.0" />
     <PackageReference Include="Flurl.Http" Version="4.0.2" />
-    <PackageReference Include="NuGet.Packaging" Version="7.9.0" />
 </ItemGroup>
 </Project>
