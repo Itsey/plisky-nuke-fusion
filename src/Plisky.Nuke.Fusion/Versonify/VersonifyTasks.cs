@@ -1,8 +1,8 @@
-﻿namespace Plisky.Nuke.Fusion;
+namespace Plisky.Fallout.Fusion;
 
 using System;
 using System.Collections.Generic;
-using global::Nuke.Common.Tooling;
+using global::Fallout.Common.Tooling;
 
 public class VersonifyTasks : ToolTasks, IRequirePathTool {
     public const int VERSONIFY_AUSTEN_COMPAT_CONSTANT = 200;

@@ -1,6 +1,6 @@
-﻿using Nuke.Common.Tooling;
+using Fallout.Common.Tooling;
 
-namespace Plisky.Nuke.Fusion;
+namespace Plisky.Fallout.Fusion;
 
 [Serializable]
 public class VersonifySettings : ToolOptions {

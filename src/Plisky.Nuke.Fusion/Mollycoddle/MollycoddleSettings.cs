@@ -1,7 +1,7 @@
-﻿namespace Plisky.Nuke.Fusion;
+namespace Plisky.Fallout.Fusion;
 
 using System;
-using global::Nuke.Common.Tooling;
+using global::Fallout.Common.Tooling;
 
 
 [Serializable]

@@ -1,6 +1,6 @@
-﻿using System.Reflection;
+using System.Reflection;
 
-namespace Plisky.Nuke.Fusion {
+namespace Plisky.Fallout.Fusion {
     public static class PnfUtilities {
         private static string pnfCache = string.Empty;
 

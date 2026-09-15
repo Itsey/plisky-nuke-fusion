@@ -1,4 +1,4 @@
-namespace Plisky.Nuke.Fusion;
+namespace Plisky.Fallout.Fusion;
 
 internal sealed class VersonifyOutputValues {
     public ISet<string> FoundMarkers { get; } = new HashSet<string>(StringComparer.Ordinal);

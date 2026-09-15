@@ -1,4 +1,4 @@
-﻿namespace Plisky.Nuke.Fusion;
+namespace Plisky.Fallout.Fusion;
 public static class GenericTasks {
 
 

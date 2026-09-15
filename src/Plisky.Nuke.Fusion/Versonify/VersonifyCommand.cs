@@ -1,7 +1,7 @@
-﻿#if VERSONIFY
+#if VERSONIFY
 namespace Versonify.Temp;
 #else
-namespace Plisky.Nuke.Fusion;
+namespace Plisky.Fallout.Fusion;
 #endif
 
 /// <summary>

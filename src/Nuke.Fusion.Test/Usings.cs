@@ -1,2 +1,2 @@
-﻿global using Nuke.Common.Tooling;
-global using Plisky.Nuke.Fusion;
+﻿global using Fallout.Common.Tooling;
+global using Plisky.Fallout.Fusion;
