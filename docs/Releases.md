@@ -8,6 +8,14 @@ This is a dotnet tool which serves as a wrapper around the tools that support bu
 
 ## Release Notes
 
+### 0.4.0-PreX
+
+This adds in a fix which means that external calls now error if they fail, this is therefore a breaking interface change all be it a good one.  This should be the final release ( once put out of pre ) before the move to fallout.
+
+### 0.3.9-Pre.0.5 
+
+This is a duff release. This should be 0.4.0-pre-0.1 but due to messing around with versioning skills rather than focussing on it the release went out in a hurry with the wrong identifier. Once 0.4 pre is released then this should be retired.  This was a quick fix for the compatibility with the new updated versonify commands - where the qqpnf return code of 201 was being returned and this caused a failure in the use of the correct type of command line.
+
 ### 0.3.9
 
 Note 0.3.9 had the issues where the major number could not increment the pre-release therefore failed builds bumped the number so 3.6/3.7/3.8 were not real releases but failed builds. 
