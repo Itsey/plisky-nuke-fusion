@@ -13,7 +13,7 @@ $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
 # CONFIGURATION
 ###########################################################################
 
-$BuildProjectFile = "$PSScriptRoot\Nuke-Fusion.Build\Nuke-Fusion.Build.csproj"
+$BuildProjectFile = "$PSScriptRoot\Fallout.Fusion.Build\Fallout.Fusion.Build.csproj"
 $TempDirectory = "$PSScriptRoot\\.fallout\temp"
 
 $DotNetGlobalFile = "$PSScriptRoot\\global.json"

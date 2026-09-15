@@ -105,7 +105,7 @@ public partial class Build : NukeBuild {
               DependenciesDirectory = Solution.Projects.First(x => x.Name == "_Dependencies").Directory,
               ArtifactsDirectory = Path.Combine(Path.GetTempPath(), "_build\\pnfbld\\"),
               NonDestructive = false,
-              MainProjectName = "Plisky.Nuke.Fusion",
+              MainProjectName = "Plisky.Fallout.Fusion",
               MollyPrimaryToken = "%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/primaryfiles/XXVERSIONNAMEXX/",
               MollyRulesToken = "%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/molly/XXVERSIONNAMEXX/defaultrules.mollyset",
               MollyRulesVersion = "default",

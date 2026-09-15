@@ -1,4 +1,4 @@
-namespace Nuke.Fusion.Test;
+namespace Fallout.Fusion.Test;
 
 public class VersonifyTests {
     [Fact]

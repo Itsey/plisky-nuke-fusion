@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Plisky.Nuke.Fusion\Plisky.Nuke.Fusion.csproj" />
+    <ProjectReference Include="..\Plisky.Fallout.Fusion\Plisky.Fallout.Fusion.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,18 +11,18 @@
     <FileVersion>0.0.0.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <Summary>Plisky.Nuke.Fusion, providing plisky library support to the Nuke build engine.</Summary>
+    <Summary>Plisky.Fallout.Fusion, providing plisky library support to the Fallout build engine.</Summary>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <ReleaseNotesFile>..\_Dependencies\SupportingFiles\release-notes.md</ReleaseNotesFile>
-    <PackageId>Plisky.Nuke.Fusion</PackageId>
+    <PackageId>Plisky.Fallout.Fusion</PackageId>
     <Authors>https://github.com/Itsey</Authors>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://itsey.github.io/</PackageProjectUrl>
-    <Description>Plisky.Nuke.Fusion providing plisky tool support to the Nuke build engine..</Description>
+    <Description>Plisky.Fallout.Fusion providing plisky tool support to the Fallout build engine..</Description>
     <Copyright>Copyright 2026</Copyright>
-    <PackageTags>nuke;cli;build</PackageTags>
-    <PackageIcon>pnf-icon.png</PackageIcon>
+    <PackageTags>fallout;cli;build</PackageTags>
+    <PackageIcon>pff-icon.png</PackageIcon>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <DebugType>portable</DebugType>
@@ -30,7 +30,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\_Dependencies\Packaging\pnf-icon.png" Pack="true" PackagePath="" />
+    <None Include="..\_Dependencies\Packaging\pff-icon.png" Pack="true" PackagePath="" />
     <None Include="..\_Dependencies\Packaging\readme.md" Pack="true" PackagePath="" />
   </ItemGroup>
   <Target Name="AddReleaseNotesToPackage" BeforeTargets="GenerateNuspec">

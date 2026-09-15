@@ -1,4 +1,4 @@
-﻿Plisky.Nuke.Fusion Change Log. 
+﻿Plisky.Fallout.Fusion Change Log. 
  
 ⬆️ V XXX-VERSION3-XXX - Bronte & .NET 10 Compatibility Release.
  - ✅ Feature - Added Framework property to MollycoddleSettings for target framework resolution.

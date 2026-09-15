@@ -1,8 +1,8 @@
-﻿# 💥Plisky.Nuke.Fusion Readme.💥
+﻿# 💥Plisky.Fallout.Fusion Readme.💥
 
 ## About
 
-This is a support package for integration Plisky Code Craft tools with Nuke build engine.  It provides wrappers for Mollycoddle, Versonify and a Discord hook.  See the full documentation on the gitub pages https://itsey.github.io/version-index.html
+This is a support package for integration Plisky Code Craft tools with Fallout build engine.  It provides wrappers for Mollycoddle, Versonify and a Discord hook.  See the full documentation on the gitub pages https://itsey.github.io/version-index.html
 
 ## Key Features
 
@@ -29,7 +29,7 @@ mc.PerformScan(mcs);
  * Main Documentation: https://itsey.github.io/
  * Project Repository: https://github.com/Itsey/plisky-nuke-fusion
 
-Longer term goal is to include this package within the main Nuke project.
+Longer term goal is to include this package within the main Fallout project.
 
 
 

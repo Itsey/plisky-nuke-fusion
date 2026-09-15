@@ -58,7 +58,7 @@ public partial class Build : NukeBuild {
           }
 
           NuGetTasks.NuGetPush(s => s
-              .SetTargetPath(settings.ArtifactsDirectory + "\\nuget\\Plisky.Nuke.Fusion*.nupkg")
+              .SetTargetPath(settings.ArtifactsDirectory + "\\nuget\\Plisky.Fallout.Fusion*.nupkg")
               .SetSource("https://api.nuget.org/v3/index.json")
               .SetApiKey(Environment.GetEnvironmentVariable("PLISKY_PUBLISH_KEY")));
       });
