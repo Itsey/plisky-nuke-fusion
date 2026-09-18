@@ -96,11 +96,6 @@ public partial class Build : NukeBuild {
           Bilge.Alert.Online("Pff-Build");
           b.Info.Log("Pff Build Process Initialised, preparing Initialisation section.");
 
-          var ap = RootDirectory.Parent / "src";
-          ap = ap / "Plisky.Nuke.Fusion.sln";
-
-          Solution = ap.ReadSolution();
-
           settings = new LocalBuildConfig() {
               DependenciesDirectory = Solution.Projects.First(x => x.Name == "_Dependencies").Directory,
               ArtifactsDirectory = Path.Combine(Path.GetTempPath(), "_build\\pffbld\\"),
@@ -109,8 +104,8 @@ public partial class Build : NukeBuild {
               MollyPrimaryToken = "%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/primaryfiles/XXVERSIONNAMEXX/",
               MollyRulesToken = "%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/molly/XXVERSIONNAMEXX/defaultrules.mollyset",
               MollyRulesVersion = "default",
-              VersioningPersistanceToken = @"%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/vstore/pnf.vstore",
-              VersioningPreReleasePersistanceToken = @"%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/vstore/pnf-pre.vstore"
+              VersioningPersistanceToken = @"%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/vstore/pff.vstore",
+              VersioningPreReleasePersistanceToken = @"%NEXUSCONFIG%[R::plisky[L::https://pliskynexus.yellowwater-365987e0.uksouth.azurecontainerapps.io/repository/plisky/vstore/pff-pre.vstore"
           };
 
           if (settings.NonDestructive) {
