@@ -1,11 +1,11 @@
-﻿
+
 using System;
 using System.Linq;
-using Nuke.Common;
-using Nuke.Common.Tools.DotNet;
+using Fallout.Common;
+using Fallout.Common.Tools.DotNet;
 using Serilog;
 
-public partial class Build : NukeBuild {
+public partial class Build : FalloutBuild {
 
     // Examine is the well known step for post compilation, pre package and deploy. Arrange Construct [Examine] Package Release Test
     public Target ExamineStep => _ => _

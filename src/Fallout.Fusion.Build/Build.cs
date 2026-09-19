@@ -1,17 +1,17 @@
 using System;
 using System.IO;
 using System.Linq;
-using Nuke.Common;
-using Nuke.Common.Git;
-using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
-using Nuke.Common.Tools.PowerShell;
+using Fallout.Common;
+using Fallout.Common.Git;
+using Fallout.Common.IO;
+using Fallout.Solutions;
+using Fallout.Common.Tooling;
+using Fallout.Common.Tools.PowerShell;
 using Plisky.Diagnostics;
 using Plisky.Diagnostics.Listeners;
 using Serilog;
 
-public partial class Build : NukeBuild {
+public partial class Build : FalloutBuild {
     protected Bilge b = new("Pff-Build");
 
     public static int Main() => Execute<Build>(x => x.Compile);
@@ -91,7 +91,7 @@ public partial class Build : NukeBuild {
               return System.Diagnostics.SourceLevels.Verbose;
           });
 
-          b = new Bilge("Nuke", tl: System.Diagnostics.SourceLevels.Verbose);
+          b = new Bilge("Fallout", tl: System.Diagnostics.SourceLevels.Verbose);
 
           Bilge.Alert.Online("Pff-Build");
           b.Info.Log("Pff Build Process Initialised, preparing Initialisation section.");

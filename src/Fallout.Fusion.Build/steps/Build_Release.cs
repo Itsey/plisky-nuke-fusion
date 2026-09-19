@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
-using Nuke.Common;
-using Nuke.Common.Tools.Git;
-using Nuke.Common.Tools.NuGet;
+using Fallout.Common;
+using Fallout.Common.Tools.Git;
+using Fallout.Common.Tools.NuGet;
 using Serilog;
 
-public partial class Build : NukeBuild {
+public partial class Build : FalloutBuild {
 
     public Target ApplyGitTag => _ => _
             .After(ReleaseStep)

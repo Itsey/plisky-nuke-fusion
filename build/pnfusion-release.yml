@@ -23,8 +23,8 @@ trigger:
   - none
 
 stages:
-  - stage: PNFRelease
-    displayName: 'Plisky Nuke Fusion Release'
+  - stage: PFFRelease
+    displayName: 'Plisky Fallout Fusion Release'
     dependsOn: [  ]
 
     pool:

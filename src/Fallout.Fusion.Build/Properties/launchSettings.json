@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Nuke-Fusion.Build": {
+    "Fallout.Fusion.Build": {
       "commandName": "Project",
       "commandLineArgs": "Compile"
     }

@@ -1,4 +1,4 @@
-# Plisky.Nuke.Fusion
+# Plisky.Fallout.Fusion
 
 ## Why
 
@@ -7,6 +7,10 @@ This is a dotnet tool which serves as a wrapper around the tools that support bu
 
 
 ## Release Notes
+
+### 1.0.0
+
+This migrates pnf -> pff, and is a breaking change, the tool is now called plisky.fallout.fusion and the command line is now pff.  The functionality is the same as pnf but it has been rebranded to be part of the fallout family of tools.
 
 ### 0.4.0-PreX
 

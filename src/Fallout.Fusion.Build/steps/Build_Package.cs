@@ -1,11 +1,11 @@
-﻿using System;
-using Nuke.Common;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Tools.NuGet;
+using System;
+using Fallout.Common;
+using Fallout.Solutions;
+using Fallout.Common.Tools.DotNet;
+using Fallout.Common.Tools.NuGet;
 using Serilog;
 
-public partial class Build : NukeBuild {
+public partial class Build : FalloutBuild {
 
     // Package Step - Well known step for bundling prior to the app release.   Arrange Construct Examine [Package] Release Test
 

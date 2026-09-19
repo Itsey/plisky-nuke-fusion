@@ -1,4 +1,4 @@
-# plisky-nuke-fusion
+# plisky-fallout-fusion
 
 > **Migration notice:** Nuke is no longer actively maintained. This project has migrated to **Plisky.Fallout.Fusion**, which provides the same Plisky tooling integrations for [Fallout](https://github.com/fallout-build/fallout), the community-maintained hard fork of Nuke.
 

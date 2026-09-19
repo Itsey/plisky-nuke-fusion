@@ -1,4 +1,5 @@
 {
   "$schema": "./build.schema.json",
+  "BuildProjectFile": "Fallout.Fusion.Build/Fallout.Fusion.Build.csproj",
   "Solution": "Plisky.Fallout.Fusion.sln"
 }
