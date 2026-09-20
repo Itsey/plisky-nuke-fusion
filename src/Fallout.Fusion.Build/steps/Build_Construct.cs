@@ -9,9 +9,6 @@ public partial class Build : FalloutBuild {
     private const string MINOR_QUICK_VALUE = ".+.0";
     private const string PATCH_QUICK_VALUE = "..+";
 
-    public string FullVersionNumber { get; set; } = string.Empty;
-
-
     // Standard entrypoint for compiling the app.  Arrange [Construct] Examine Package Release Test
     public Target ConstructStep => _ => _
         .Before(ExamineStep, Wrapup)
@@ -145,6 +142,9 @@ public partial class Build : FalloutBuild {
           if (!PreRelease) {
               UpdatePreReleaseVersionNumber(dryRunMode, versioningType, vc, mmPathBase);
           }
+
+          // Set Azure DevOps variable for use in pipeline/release steps
+          Console.WriteLine($"##vso[task.setvariable variable=FullVersionNumber;isOutput=true]{FullVersionNumber}");
       });
 
 

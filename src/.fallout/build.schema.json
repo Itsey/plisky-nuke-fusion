@@ -131,6 +131,10 @@
           ],
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)"
         },
+        "FullVersionNumber": {
+          "type": "string",
+          "description": "Full version number"
+        },
         "IsMajor": {
           "type": "boolean",
           "description": "Increment the major version digit instead of patch"
@@ -144,10 +148,6 @@
           "description": "PreRelease will only release a pre-release verison of the package.  Uses pre-release versioning"
         },
         "QuickVersion": {
-          "type": "string",
-          "description": "Specifies a quick version command for the versioning quick step"
-        },
-        "ReleaseName": {
           "type": "string",
           "description": "Specifies a quick version command for the versioning quick step"
         },

@@ -22,9 +22,6 @@ public partial class Build : FalloutBuild {
     [Parameter("Specifies a quick version command for the versioning quick step")]
     private readonly string QuickVersion = "";
 
-    [Parameter("Specifies a quick version command for the versioning quick step")]
-    private readonly string ReleaseName = "";
-
     [Parameter("PreRelease will only release a pre-release verison of the package.  Uses pre-release versioning.")]
     private readonly bool PreRelease = true;
 
@@ -34,11 +31,14 @@ public partial class Build : FalloutBuild {
     [Parameter("Increment the minor version digit instead of patch.")]
     private readonly bool IsMinor = false;
 
+    [Parameter("Full version number")]
+    public string FullVersionNumber { get; set; } = string.Empty;
+
     [GitRepository]
     private readonly GitRepository GitRepository;
 
     [Solution]
-    private Solution Solution;
+    private readonly Solution Solution;
 
     private LocalBuildConfig settings;
 

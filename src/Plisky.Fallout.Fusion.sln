@@ -14,7 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{2F25F24A-E58B-41E1-8485-1EA2E90F9A21}"
 	ProjectSection(SolutionItems) = preProject
 		..\build\pffusion-ci.yml = ..\build\pffusion-ci.yml
-		..\build\pnfusion-release.yml = ..\build\pnfusion-release.yml
+		..\build\pffusion-release.yml = ..\build\pffusion-release.yml
 	EndProjectSection
 EndProject
 Global
