@@ -18,7 +18,7 @@ stages:
 
     jobs:
       - job: Build
-        displayName: 'PNF CI Build.'
+        displayName: 'PFF CI Build.'
         dependsOn: [  ]
         steps:
           - task: CmdLine@2
