@@ -7,7 +7,7 @@ using global::Fallout.Common.Tooling;
 
 public class MollycoddleTasks : ToolTasks {
     public MollycoddleTasks() {
-        this.GetLogger().Invoke(OutputType.Std, $"{PffUtilities.GetPffString()} [Mollycoddle Tasks]");
+        GetLogger().Invoke(OutputType.Std, $"{PffUtilities.GetPffString()} [Mollycoddle Tasks]");
     }
 
     public IReadOnlyCollection<Output> PerformScan(Configure<MollycoddleSettings> configure) {

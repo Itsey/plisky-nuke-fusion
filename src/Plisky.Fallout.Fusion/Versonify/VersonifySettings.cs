@@ -62,7 +62,7 @@ public class VersonifySettings : ToolOptions {
     /// <summary>
     /// Corresponds to -MM in the Versonify tool.
     /// </summary>
-    public string[] VersionTargetMinMatch { get; set; } = new string[0];
+    public string[] VersionTargetMinMatch { get; set; } = [];
 
     /// <summary>
     /// Corresponds to -Command in the Versonify tool.

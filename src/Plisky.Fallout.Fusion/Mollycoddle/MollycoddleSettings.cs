@@ -10,20 +10,20 @@ public class MollycoddleSettings : ToolOptions {
     public bool Debug { get; set; }
     public bool DryRun { get; set; }
 
-    public string TraceConfiguration { get; set; }
+    public string TraceConfiguration { get; set; } = string.Empty;
 
     public bool Disabled { get; set; }
     public string RulesetVersion { get; set; } = "default";
 
-    public string Directory { get; set; }
+    public string Directory { get; set; } = string.Empty;
 
     public bool RuleHelp { get; set; }
 
     public string Formatter { get; set; } = "default";
 
-    public string PrimaryRoot { get; set; }
+    public string PrimaryRoot { get; set; } = string.Empty;
 
-    public string RulesFile { get; set; }
+    public string RulesFile { get; set; } = string.Empty;
 
 
     public string? Framework { get; set; }

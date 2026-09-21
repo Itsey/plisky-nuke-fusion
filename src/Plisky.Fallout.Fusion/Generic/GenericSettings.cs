@@ -17,12 +17,11 @@ public class GenericSettings : ToolOptions {
     public string? DirectSetArguments { get; set; }
     public string? WorkingDirectory { get; set; }
 
-    private string GetPath() {
+    private string? GetPath() {
 
         if (string.IsNullOrWhiteSpace(GenericExeName)) {
             throw new InvalidOperationException("GenericExeName must be set to the name of the executable to run.");
         }
-
 
         if (File.Exists(GenericExeName)) {
             ResolvedExePath = GenericExeName;
@@ -40,7 +39,6 @@ public class GenericSettings : ToolOptions {
                             ResolvedExePath = possiblePath;
                         }
                     }
-
                 }
             }
         }
@@ -56,6 +54,4 @@ public class GenericSettings : ToolOptions {
             return WorkingDirectory;
         }
     }
-
-
 }
