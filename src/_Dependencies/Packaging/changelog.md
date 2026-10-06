@@ -1,6 +1,8 @@
 ﻿Plisky.Fallout.Fusion Change Log. 
  
-⬆️V XXX-VERSION3-XXX - Fallout Migration Release.
+⬆️V XXX-VERSION3-XXX -
+
+V 1.0.0 - Fallout Migration Release.
  - ✅ Breaking Change - Renamed the package from Plisky.Nuke.Fusion to Plisky.Fallout.Fusion.
  - ✅ Breaking Change - Migrated from the Nuke build engine to Fallout, the community-maintained fork of Nuke.
  - ✅ Maintenance - Continued support for Mollycoddle, Versonify and Discord webhooks.
