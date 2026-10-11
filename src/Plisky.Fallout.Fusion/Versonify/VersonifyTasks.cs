@@ -29,10 +29,12 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
     public IReadOnlyCollection<Output> ExecuteVersonify(VersonifySettings? settings, VersonifyCommand command = VersonifyCommand.Unknown, string? replaceCommandLine = null) {
         settings ??= new VersonifySettings();
         ValidateSettings(settings, command);
-        SetCommand(settings, command);
         SetToolPath(settings.GetPath());
 
-        var arguments = GetArguments(settings, replaceCommandLine);
+        int compatibilityLevel = replaceCommandLine == null ? GetCompatibilityLevel() : 0;
+        SetCommand(settings, command, compatibilityLevel);
+
+        var arguments = GetArguments(settings, replaceCommandLine, compatibilityLevel);
         var result = RunCommand(arguments, command);
         ParseVersionOutput(result.StdToText());
         ValidateVersionOutput(command, VersionLiteral, GetOutputText(result));
@@ -45,20 +47,19 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
         }
     }
 
-    private static void SetCommand(VersonifySettings settings, VersonifyCommand command) {
+    private static void SetCommand(VersonifySettings settings, VersonifyCommand command, int compatibilityLevel) {
         if (command != VersonifyCommand.Unknown) {
-            settings.SetCommand(command);
+            settings.SetCommand(command, compatibilityLevel == VERSONIFY_BRONTE_COMPAT_CONSTANT);
         }
     }
 
-    private ArgumentStringHandler GetArguments(VersonifySettings settings, string? replaceCommandLine) {
+    private ArgumentStringHandler GetArguments(VersonifySettings settings, string? replaceCommandLine, int compatibilityLevel) {
         if (replaceCommandLine != null) {
             var replacementArguments = new ArgumentStringHandler(0, 0, out _);
             replacementArguments.AppendLiteral(replaceCommandLine);
             return replacementArguments;
         }
 
-        int compatibilityLevel = GetCompatibilityLevel();
         return compatibilityLevel switch {
             VERSONIFY_BRONTE_COMPAT_CONSTANT => settings.GetArgsAsString201(),
             VERSONIFY_AUSTEN_COMPAT_CONSTANT => settings.GetArgsAsString200(),

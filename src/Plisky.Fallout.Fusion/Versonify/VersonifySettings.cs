@@ -75,7 +75,11 @@ public class VersonifySettings : ToolOptions {
     public string Command { get; set; } = string.Empty;
 
     public void SetCommand(VersonifyCommand cmd) {
-        Command = "-Command=" + cmd.ToString();
+        SetCommand(cmd, useLongOption: false);
+    }
+
+    public void SetCommand(VersonifyCommand cmd, bool useLongOption) {
+        Command = (useLongOption ? "--command=" : "-Command=") + cmd;
     }
 
     public bool DryRun { get; set; }

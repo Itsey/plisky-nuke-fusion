@@ -83,7 +83,7 @@ public class VersonifyTests {
     [Fact]
     public void VersonifySettings_GetArgsAsString201_ShouldUseBrontesArgumentNames() {
         var settings = new VersonifySettings {
-            Command = "-Command=Passive",
+            Command = "--command=Passive",
             VersionPersistanceValue = "2.0.0",
             Root = "src",
             QuickValue = "quick",
@@ -99,7 +99,7 @@ public class VersonifyTests {
 
         string args = settings.GetArgsAsString201().ToStringAndClear();
 
-        args.ShouldBe("-Command=Passive --version-source=2.0.0 --root=src --quick-value=quick --release=Bronte --min-match=match.txt -debug --dry-run --increment --no-error --trace=trace --output=azdo-nf");
+        args.ShouldBe("--command=Passive --version-source=2.0.0 --root=src --quick-value=quick --release=Bronte --min-match=match.txt -debug --dry-run --increment --no-error --trace=trace --output=azdo-nf");
     }
 
     [Fact]
@@ -154,24 +154,25 @@ public class VersonifyTests {
     [Fact]
     public void VersonifySettings_GetArgsAsString201_ShouldUseDefaultOutputWhenUnset() {
         var settings = new VersonifySettings {
-            Command = "-Command=Passive",
+            Command = "--command=Passive",
             VersionPersistanceValue = "2.0.0",
             Root = "src"
         };
 
         string args = settings.GetArgsAsString201().ToStringAndClear();
 
-        args.ShouldBe("-Command=Passive --version-source=2.0.0 --root=src --output=con-nf");
+        args.ShouldBe("--command=Passive --version-source=2.0.0 --root=src --output=con-nf");
     }
 
     [Fact]
     public void VersonifySettings_SetReleaseWithoutValue_ShouldRequestStoredReleaseName() {
         var settings = new VersonifySettings();
-        settings.SetCommand(VersonifyCommand.Passive);
+        settings.SetCommand(VersonifyCommand.Passive, useLongOption: true);
         settings.SetRelease();
 
         settings.GetArgsAsString201().ToStringAndClear()
-            .ShouldBe("-Command=Passive --version-source= --root= --release --output=con-nf");
+            .ShouldBe("--command=Passive --version-source= --root= --release --output=con-nf");
+        settings.SetCommand(VersonifyCommand.Passive);
         settings.GetArgsAsString200().ToStringAndClear()
             .ShouldBe("-Command=Passive -v= -Root= -Release -O=con-nf");
     }
@@ -183,6 +184,15 @@ public class VersonifyTests {
         settings.SetCommand(VersonifyCommand.Unknown);
 
         settings.Command.ShouldBe("-Command=Unknown");
+    }
+
+    [Fact]
+    public void VersonifySettings_SetCommand_ShouldUseBrontesCommandOptionWhenRequested() {
+        var settings = new VersonifySettings();
+
+        settings.SetCommand(VersonifyCommand.Passive, useLongOption: true);
+
+        settings.Command.ShouldBe("--command=Passive");
     }
 
     [Theory]
