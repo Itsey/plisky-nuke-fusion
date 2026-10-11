@@ -87,6 +87,7 @@ public class VersonifyTests {
             VersionPersistanceValue = "2.0.0",
             Root = "src",
             QuickValue = "quick",
+            Release = "Bronte",
             MultiMatchFile = "match.txt",
             Debug = true,
             DryRun = true,
@@ -98,7 +99,7 @@ public class VersonifyTests {
 
         string args = settings.GetArgsAsString201().ToStringAndClear();
 
-        args.ShouldBe("-Command=Passive --version-source=2.0.0 --root=src --quick-value=quick --min-match=match.txt -debug --dry-run --increment --no-error --trace=trace --output=azdo-nf");
+        args.ShouldBe("-Command=Passive --version-source=2.0.0 --root=src --quick-value=quick --release=Bronte --min-match=match.txt -debug --dry-run --increment --no-error --trace=trace --output=azdo-nf");
     }
 
     [Fact]
@@ -108,6 +109,7 @@ public class VersonifyTests {
             VersionPersistanceValue = "1.2.3",
             Root = "src",
             QuickValue = "qa",
+            Release = "Austen",
             MultiMatchFile = "release.txt",
             Debug = true,
             DryRun = true,
@@ -119,7 +121,7 @@ public class VersonifyTests {
 
         string args = settings.GetArgsAsString200().ToStringAndClear();
 
-        args.ShouldBe("-Command=UpdateFiles -v=1.2.3 -Root=src -Q=qa -m=release.txt -Debug -DryRun -Increment -z -Trace=trace-config -O=env-nf");
+        args.ShouldBe("-Command=UpdateFiles -v=1.2.3 -Root=src -Q=qa -Release=Austen -m=release.txt -Debug -DryRun -Increment -z -Trace=trace-config -O=env-nf");
     }
 
     [Fact]
@@ -160,6 +162,18 @@ public class VersonifyTests {
         string args = settings.GetArgsAsString201().ToStringAndClear();
 
         args.ShouldBe("-Command=Passive --version-source=2.0.0 --root=src --output=con-nf");
+    }
+
+    [Fact]
+    public void VersonifySettings_SetReleaseWithoutValue_ShouldRequestStoredReleaseName() {
+        var settings = new VersonifySettings();
+        settings.SetCommand(VersonifyCommand.Passive);
+        settings.SetRelease();
+
+        settings.GetArgsAsString201().ToStringAndClear()
+            .ShouldBe("-Command=Passive --version-source= --root= --release --output=con-nf");
+        settings.GetArgsAsString200().ToStringAndClear()
+            .ShouldBe("-Command=Passive -v= -Root= -Release -O=con-nf");
     }
 
     [Fact]

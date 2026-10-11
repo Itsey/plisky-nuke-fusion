@@ -1,6 +1,7 @@
 ﻿Plisky.Fallout.Fusion Change Log. 
  
 ⬆️V XXX-VERSION3-XXX -
+- 🐞 Fix - Wire in Versonify --release parameter 
 
 V 1.0.0 - Fallout Migration Release.
  - ✅ Breaking Change - Renamed the package from Plisky.Nuke.Fusion to Plisky.Fallout.Fusion.
@@ -10,7 +11,7 @@ V 1.0.0 - Fallout Migration Release.
 V 0.4.0 - Bronte & .NET 10 Compatibility Release.
  - ✅ Feature - Added Framework property to MollycoddleSettings for target framework resolution.
  - ✅ Feature - Updated Versonify support to be compatible with Bronte release.
- - ✅ Fix - Hardened Versonify command execution and error handling.
+ - 🐞 Fix - Hardened Versonify command execution and error handling.
  - ✅ Chore - Upgraded build and test projects to .NET 10.
 
 V 0.3.9 - Austen Compatibility Release.

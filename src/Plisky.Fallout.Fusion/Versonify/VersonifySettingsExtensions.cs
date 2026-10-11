@@ -44,6 +44,13 @@ public static partial class VersonifySettingsExtensions {
 
     public static T SetRelease<T>(this T toolSettings, string newReleaseValue) where T : VersonifySettings {
         toolSettings.Release = newReleaseValue;
+        toolSettings.OutputReleaseName = false;
+        return toolSettings;
+    }
+
+    public static T SetRelease<T>(this T toolSettings) where T : VersonifySettings {
+        toolSettings.Release = string.Empty;
+        toolSettings.OutputReleaseName = true;
         return toolSettings;
     }
 

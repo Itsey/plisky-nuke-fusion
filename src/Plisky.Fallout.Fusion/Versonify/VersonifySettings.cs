@@ -48,9 +48,14 @@ public class VersonifySettings : ToolOptions {
     public string QuickValue { get; set; } = string.Empty;
 
     /// <summary>
-    /// Corresponds to -Release in the Versonify tool.
+    /// Corresponds to --release in the Versonify tool.
     /// </summary>
     public string Release { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Requests the stored release name instead of the full version when using Passive.
+    /// </summary>
+    public bool OutputReleaseName { get; set; }
 
     /// <summary>
     /// Corresponds to -Root in the Versonify tool.
@@ -86,7 +91,7 @@ public class VersonifySettings : ToolOptions {
     }
 
     public ArgumentStringHandler GetArgsAsString201() {
-        // Compatible with V1.1 Bronte release of Versonify.  This is the current version as the time of writing this code.
+        // Compatible with V2.0 Bronte release of Versonify.  This is the current version as the time of writing this code.
         // Indicated by 201 level return code from versonify.
 
         var result = new ArgumentStringHandler(0, 0, out _);
@@ -96,6 +101,12 @@ public class VersonifySettings : ToolOptions {
 
         if (!string.IsNullOrEmpty(QuickValue)) {
             result.AppendLiteral($" --quick-value={QuickValue}");
+        }
+
+        if (!string.IsNullOrEmpty(Release)) {
+            result.AppendLiteral($" --release={Release}");
+        } else if (OutputReleaseName) {
+            result.AppendLiteral(" --release");
         }
 
         if (!string.IsNullOrEmpty(MultiMatchFile)) {
@@ -144,6 +155,12 @@ public class VersonifySettings : ToolOptions {
 
         if (!string.IsNullOrEmpty(QuickValue)) {
             result.AppendLiteral($" -Q={QuickValue}");
+        }
+
+        if (!string.IsNullOrEmpty(Release)) {
+            result.AppendLiteral($" -Release={Release}");
+        } else if (OutputReleaseName) {
+            result.AppendLiteral(" -Release");
         }
 
         if (!string.IsNullOrEmpty(MultiMatchFile)) {
