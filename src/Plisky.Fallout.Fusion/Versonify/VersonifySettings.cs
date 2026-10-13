@@ -11,39 +11,49 @@ public class VersonifySettings : ToolOptions {
     public bool AlwaysReturnZero { get; set; } = false;
 
     /// <summary>
-    /// Corresponds to -O in the versonify tool.  Can be env, con, file, np, npo, azdo
+    /// Corresponds to --output in the versonify tool. Supports env, con, jcon, azdo[:varname], file[:filename], con-pf and con-nf.
     /// </summary>
     public string OutputStyle { get; set; } = string.Empty;
 
     public string TraceConfiguration { get; set; } = string.Empty;
 
     /// <summary>
-    /// Corresponds to -Debug in the Versonify tool.
+    /// Corresponds to --debug in the Versonify tool.
     /// </summary>
     public bool Debug { get; set; }
 
     /// <summary>
-    /// Corresponds to -NoOverride in the Versonify tool.
+    /// Corresponds to --no-override in the Versonify tool.
     /// </summary>
     public bool NoOverride { get; set; }
 
     /// <summary>
-    /// Corresponds to -Digits in the Versonify tool.
+    /// Corresponds to --digits in the Versonify tool.
     /// </summary>
     public string Digits { get; set; } = string.Empty;
 
     /// <summary>
-    /// Corresponds to -MM in the Versonify tool.
+    /// Corresponds to --digit-group in the Versonify tool.
+    /// </summary>
+    public string DigitGroup { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Corresponds to --pre-release in the Versonify tool.
+    /// </summary>
+    public bool PreRelease { get; set; }
+
+    /// <summary>
+    /// Corresponds to --min-match in the Versonify tool.
     /// </summary>
     public string MultiMatchFile { get; set; } = string.Empty;
 
     /// <summary>
-    /// Corresponds to -Increment in the Versonify tool.
+    /// Corresponds to --increment in the Versonify tool.
     /// </summary>
     public bool PerformIncrement { get; set; }
 
     /// <summary>
-    /// Corresponds to -Q in the Versonify tool.
+    /// Corresponds to --quick-value in the Versonify tool.
     /// </summary>
     public string QuickValue { get; set; } = string.Empty;
 
@@ -65,12 +75,12 @@ public class VersonifySettings : ToolOptions {
     public string VersionPersistanceValue { get; set; } = string.Empty;
 
     /// <summary>
-    /// Corresponds to -MM in the Versonify tool.
+    /// Corresponds to --min-match in the Versonify tool.
     /// </summary>
     public string[] VersionTargetMinMatch { get; set; } = [];
 
     /// <summary>
-    /// Corresponds to -Command in the Versonify tool.
+    /// Corresponds to --command in the Versonify tool.
     /// </summary>
     public string Command { get; set; } = string.Empty;
 
@@ -82,8 +92,14 @@ public class VersonifySettings : ToolOptions {
         Command = (useLongOption ? "--command=" : "-Command=") + cmd;
     }
 
+    /// <summary>
+    /// Corresponds to --dry-run in the Versonify tool.
+    /// </summary>
     public bool DryRun { get; set; }
 
+    /// <summary>
+    /// Corresponds to the target framework for the Versonify tool.  If not specified, the default framework will be used.
+    /// </summary>
     public string? Framework { get; set; }
 
     public string GetPath() {
@@ -99,12 +115,12 @@ public class VersonifySettings : ToolOptions {
         // Indicated by 201 level return code from versonify.
 
         var result = new ArgumentStringHandler(0, 0, out _);
-        result.AppendLiteral(Command);
-        result.AppendLiteral($" --version-source={VersionPersistanceValue}");
-        result.AppendLiteral($" --root={Root}");
+        result.AppendLiteral(GetCommandArgument(legacy: false));
+        AppendOption(ref result, "--version-source", VersionPersistanceValue);
+        AppendOption(ref result, "--root", Root);
 
         if (!string.IsNullOrEmpty(QuickValue)) {
-            result.AppendLiteral($" --quick-value={QuickValue}");
+            AppendOption(ref result, "--quick-value", QuickValue);
         }
 
         if (!string.IsNullOrEmpty(Release)) {
@@ -114,11 +130,27 @@ public class VersonifySettings : ToolOptions {
         }
 
         if (!string.IsNullOrEmpty(MultiMatchFile)) {
-            result.AppendLiteral($" --min-match={MultiMatchFile}");
+            AppendOption(ref result, "--min-match", MultiMatchFile);
         }
 
         if (Debug) {
-            result.AppendLiteral(" -debug");
+            result.AppendLiteral(" --debug");
+        }
+
+        if (NoOverride) {
+            result.AppendLiteral(" --no-override");
+        }
+
+        if (!string.IsNullOrEmpty(Digits)) {
+            AppendOption(ref result, "--digits", Digits);
+        }
+
+        if (!string.IsNullOrEmpty(DigitGroup)) {
+            AppendOption(ref result, "--digit-group", DigitGroup);
+        }
+
+        if (PreRelease) {
+            result.AppendLiteral(" --pre-release");
         }
 
         if (DryRun) {
@@ -134,26 +166,61 @@ public class VersonifySettings : ToolOptions {
         }
 
         if (!string.IsNullOrEmpty(TraceConfiguration)) {
-            result.AppendLiteral($" --trace={TraceConfiguration}");
+            AppendOption(ref result, "--trace", TraceConfiguration);
         }
 
-        if (OutputStyle != string.Empty) {
-            if (!OutputStyle.EndsWith("-nf")) {
-                OutputStyle += "-nf";
-            }
-            result.AppendLiteral($" --output={OutputStyle}");
-        } else {
-            result.AppendLiteral(" --output=con-nf");
-        }
+        AppendOption(ref result, "--output", string.IsNullOrEmpty(OutputStyle) ? "con-pf" : OutputStyle);
         return result;
+    }
+
+    private static void AppendOption(ref ArgumentStringHandler arguments, string option, string value) {
+        arguments.AppendLiteral($" {option}=");
+        arguments.AppendFormatted(value);
+    }
+
+    private string GetCommandArgument(bool legacy) {
+        string commandName = Command;
+        foreach (string prefix in new[] { "--command=", "-Command=" }) {
+            if (commandName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
+                commandName = commandName[prefix.Length..];
+                break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(commandName)) {
+            return string.Empty;
+        }
+
+        if (legacy) {
+            if (Enum.TryParse<VersonifyCommand>(commandName, ignoreCase: true, out var command)) {
+                commandName = command.ToString();
+            }
+            return "-Command=" + commandName;
+        }
+
+        return "--command=" + commandName.ToLowerInvariant();
+    }
+
+    private string GetLegacyOutputStyle() {
+        if (string.IsNullOrEmpty(OutputStyle) || OutputStyle == "con-pf") {
+            return "con-nf";
+        }
+        return OutputStyle.EndsWith("-nf", StringComparison.Ordinal) ? OutputStyle : OutputStyle + "-nf";
+    }
+
+    private void ValidateLegacySettings() {
+        if (PreRelease || !string.IsNullOrEmpty(DigitGroup)) {
+            throw new InvalidOperationException("Versonify digit groups require compatibility level 201 or above. Update your Versonify tool.");
+        }
     }
 
     public ArgumentStringHandler GetArgsAsString200() {
         // Compatible with V1.0.2 of Versonify.  This is the current version as the time of writing this code.
         // Indicated by 200 level return code from versonify.
 
+        ValidateLegacySettings();
         var result = new ArgumentStringHandler(0, 0, out _);
-        result.AppendLiteral(Command);
+        result.AppendLiteral(GetCommandArgument(legacy: true));
         result.AppendLiteral($" -v={VersionPersistanceValue}");
         result.AppendLiteral($" -Root={Root}");
 
@@ -191,22 +258,16 @@ public class VersonifySettings : ToolOptions {
             result.AppendLiteral($" -Trace={TraceConfiguration}");
         }
 
-        if (OutputStyle != string.Empty) {
-            if (!OutputStyle.EndsWith("-nf")) {
-                OutputStyle += "-nf";
-            }
-            result.AppendLiteral($" -O={OutputStyle}");
-        } else {
-            result.AppendLiteral(" -O=con-nf");
-        }
+        result.AppendLiteral($" -O={GetLegacyOutputStyle()}");
         return result;
     }
 
     public ArgumentStringHandler GetArgsString() {
         // This is the first implementaiton, compatible with versions below 1.0.2 - no return code from versonify.
 
+        ValidateLegacySettings();
         var result = new ArgumentStringHandler(0, 0, out _);
-        result.AppendLiteral(Command);
+        result.AppendLiteral(GetCommandArgument(legacy: true));
         result.AppendLiteral($" -vs={VersionPersistanceValue}");
         result.AppendLiteral($" -Root={Root}");
 
@@ -234,14 +295,7 @@ public class VersonifySettings : ToolOptions {
             result.AppendLiteral($" -Trace={TraceConfiguration}");
         }
 
-        if (OutputStyle != string.Empty) {
-            if (!OutputStyle.EndsWith("-nf")) {
-                OutputStyle += "-nf";
-            }
-            result.AppendLiteral($" -O={OutputStyle}");
-        } else {
-            result.AppendLiteral(" -O=con-nf");
-        }
+        result.AppendLiteral($" -O={GetLegacyOutputStyle()}");
         return result;
     }
 }

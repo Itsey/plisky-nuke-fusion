@@ -17,31 +17,33 @@ internal static class VersonifyOutputParser {
         var values = new VersonifyOutputValues();
         string[] lines = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
 
-        foreach (string line in lines) {
-            if (line.StartsWith("PNFV]")) {
-                values.FoundMarkers.Add("PNFV]");
-                values.VersionLiteral = line[5..];
-            } else if (line.StartsWith("PNF2]")) {
-                values.FoundMarkers.Add("PNF2]");
-                values.ShortVersion = line[5..];
-            } else if (line.StartsWith("PNFN]")) {
-                values.FoundMarkers.Add("PNFN]");
-                values.ReleaseName = line[5..];
-            } else if (line.StartsWith("PNF3]")) {
-                values.FoundMarkers.Add("PNF3]");
-                values.ThreeDigit = line[5..];
-            } else if (line.StartsWith("PN4D]")) {
-                values.FoundMarkers.Add("PN4D]");
-                values.FourDigitNumeric = line[5..];
-            } else if (line.StartsWith("PNQF]")) {
-                values.FoundMarkers.Add("PNQF]");
-                values.QueuedFull = line[5..];
-            } else if (line.StartsWith("PN3D]")) {
-                values.FoundMarkers.Add("PN3D]");
-                values.ThreeDigitNumeric = line[5..];
-            } else if (line.StartsWith("PNF4]")) {
-                values.FoundMarkers.Add("PNF4]");
-                values.FourDigit = line[5..];
+        foreach (string outputLine in lines) {
+            // Normalize legacy Nuke Fusion markers to the Plisky Fusion marker names.
+            string line = outputLine.StartsWith("PN", StringComparison.Ordinal) ? "P" + outputLine[2..] : outputLine;
+            if (line.StartsWith("PFV]", StringComparison.Ordinal)) {
+                values.FoundMarkers.Add("PFV]");
+                values.VersionLiteral = line[4..];
+            } else if (line.StartsWith("PF2]", StringComparison.Ordinal)) {
+                values.FoundMarkers.Add("PF2]");
+                values.ShortVersion = line[4..];
+            } else if (line.StartsWith("PFN]", StringComparison.Ordinal)) {
+                values.FoundMarkers.Add("PFN]");
+                values.ReleaseName = line[4..];
+            } else if (line.StartsWith("PF3]", StringComparison.Ordinal)) {
+                values.FoundMarkers.Add("PF3]");
+                values.ThreeDigit = line[4..];
+            } else if (line.StartsWith("P4D]", StringComparison.Ordinal)) {
+                values.FoundMarkers.Add("P4D]");
+                values.FourDigitNumeric = line[4..];
+            } else if (line.StartsWith("PQF]", StringComparison.Ordinal)) {
+                values.FoundMarkers.Add("PQF]");
+                values.QueuedFull = line[4..];
+            } else if (line.StartsWith("P3D]", StringComparison.Ordinal)) {
+                values.FoundMarkers.Add("P3D]");
+                values.ThreeDigitNumeric = line[4..];
+            } else if (line.StartsWith("PF4]", StringComparison.Ordinal)) {
+                values.FoundMarkers.Add("PF4]");
+                values.FourDigit = line[4..];
             }
         }
         return values;

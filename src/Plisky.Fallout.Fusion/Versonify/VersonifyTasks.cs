@@ -26,7 +26,7 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
     }
 
 
-    public IReadOnlyCollection<Output> ExecuteVersonify(VersonifySettings? settings, VersonifyCommand command = VersonifyCommand.Unknown, string? replaceCommandLine = null) {
+    public virtual IReadOnlyCollection<Output> ExecuteVersonify(VersonifySettings? settings, VersonifyCommand command = VersonifyCommand.Unknown, string? replaceCommandLine = null) {
         settings ??= new VersonifySettings();
         ValidateSettings(settings, command);
         SetToolPath(settings.GetPath());
@@ -61,7 +61,7 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
         }
 
         return compatibilityLevel switch {
-            VERSONIFY_BRONTE_COMPAT_CONSTANT => settings.GetArgsAsString201(),
+            >= VERSONIFY_BRONTE_COMPAT_CONSTANT => settings.GetArgsAsString201(),
             VERSONIFY_AUSTEN_COMPAT_CONSTANT => settings.GetArgsAsString200(),
             _ => GetLegacyArguments(settings, compatibilityLevel)
         };
@@ -69,7 +69,7 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
 
     private int GetCompatibilityLevel() {
         int compatibilityLevel = 0;
-        Run("--QQpnf", exitHandler: process => {
+        Run("--qqpnf", exitHandler: process => {
             if (process.ExitCode != 0) {
                 GetLogger().Invoke(OutputType.Std, $"Versonify Compat Code: {process.ExitCode}");
                 compatibilityLevel = process.ExitCode;
@@ -101,28 +101,28 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
         ThreeDigitNumeric = values.ThreeDigitNumeric;
         FourDigit = values.FourDigit;
 
-        if (values.FoundMarkers.Contains("PNFV]")) {
+        if (values.FoundMarkers.Contains("PFV]")) {
             GetLogger().Invoke(OutputType.Std, $"Versonify Returned Default Version As: {VersionLiteral}");
         }
-        if (values.FoundMarkers.Contains("PNF2]")) {
+        if (values.FoundMarkers.Contains("PF2]")) {
             GetLogger().Invoke(OutputType.Std, $"Versonify Returned Short Version As: {ShortVersion}");
         }
-        if (values.FoundMarkers.Contains("PNFN]")) {
+        if (values.FoundMarkers.Contains("PFN]")) {
             GetLogger().Invoke(OutputType.Std, $"Versonify Returned ReleaseName As: {ReleaseName}");
         }
-        if (values.FoundMarkers.Contains("PNF3]")) {
+        if (values.FoundMarkers.Contains("PF3]")) {
             GetLogger().Invoke(OutputType.Std, $"Versonify Returned ThreeDigit As: {ThreeDigit}");
         }
-        if (values.FoundMarkers.Contains("PN4D]")) {
+        if (values.FoundMarkers.Contains("P4D]")) {
             GetLogger().Invoke(OutputType.Std, $"Versonify Returned FourDigitNumeric As: {FourDigitNumeric}");
         }
-        if (values.FoundMarkers.Contains("PNQF]")) {
+        if (values.FoundMarkers.Contains("PQF]")) {
             GetLogger().Invoke(OutputType.Std, $"Versonify Returned Queued Full Version As: {QueuedFull}");
         }
-        if (values.FoundMarkers.Contains("PN3D]")) {
+        if (values.FoundMarkers.Contains("P3D]")) {
             GetLogger().Invoke(OutputType.Std, $"Versonify Returned ThreeDigitNumeric As: {ThreeDigitNumeric}");
         }
-        if (values.FoundMarkers.Contains("PNF4]")) {
+        if (values.FoundMarkers.Contains("PF4]")) {
             GetLogger().Invoke(OutputType.Std, $"Versonify Returned FourDigit As:{FourDigit} ");
         }
     }
@@ -130,7 +130,7 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
     internal static void ValidateVersionOutput(VersonifyCommand command, string versionLiteral, string output) {
         if (RequiresVersion(command) && string.IsNullOrWhiteSpace(versionLiteral)) {
             throw new InvalidOperationException(
-                $"Versonify '{command}' completed successfully but did not return a PNFV] version value.{Environment.NewLine}" +
+                $"Versonify '{command}' completed successfully but did not return a PFV] or PNFV] version value.{Environment.NewLine}" +
                 $"Output:{Environment.NewLine}{output}");
         }
     }
@@ -207,5 +207,16 @@ public class VersonifyTasks : ToolTasks, IRequirePathTool {
 
     private IReadOnlyCollection<Output> PassiveCommand(VersonifySettings settings) {
         return ExecuteVersonify(settings, VersonifyCommand.Passive);
+    }
+
+    public IReadOnlyCollection<Output> SetCommand(Configure<VersonifySettings> configure) {
+        if (configure == null) {
+            throw new InvalidOperationException();
+        }
+        return SetCommand(configure(new VersonifySettings()));
+    }
+
+    private IReadOnlyCollection<Output> SetCommand(VersonifySettings settings) {
+        return ExecuteVersonify(settings, VersonifyCommand.Set);
     }
 }

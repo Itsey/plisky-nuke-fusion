@@ -5,7 +5,7 @@ namespace Plisky.Fallout.Fusion;
 #endif
 
 /// <summary>
-/// The values for the -Command parameter in the Versonify tool.
+/// The values for the --command parameter in the Versonify tool.
 /// </summary>
 public enum VersonifyCommand {
     /// <summary>
@@ -27,5 +27,9 @@ public enum VersonifyCommand {
     /// <summary>
     /// Adds an override to the version number.
     /// </summary>
-    Override
+    Override,
+    /// <summary>
+    /// Sets the version number to a specific value.
+    /// </summary>
+    Set
 }

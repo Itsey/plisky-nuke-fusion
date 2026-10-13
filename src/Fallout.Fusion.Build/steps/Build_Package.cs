@@ -1,8 +1,8 @@
 using System;
 using Fallout.Common;
-using Fallout.Solutions;
 using Fallout.Common.Tools.DotNet;
 using Fallout.Common.Tools.NuGet;
+using Fallout.Solutions;
 using Serilog;
 
 public partial class Build : FalloutBuild {

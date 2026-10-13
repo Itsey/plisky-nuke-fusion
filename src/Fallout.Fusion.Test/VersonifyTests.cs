@@ -1,9 +1,11 @@
 namespace Fallout.Fusion.Test;
 
 public class VersonifyTests {
-    [Fact]
-    public void VersonifyOutputParser_Parse_ShouldExtractAllSupportedMarkers() {
-        var result = VersonifyOutputParser.Parse("""
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void VersonifyOutputParser_Parse_ShouldExtractAllSupportedMarkers(bool legacy) {
+        string output = """
             PNFV]1.2.3.4
             PNF2]1.2
             PNFN]beta
@@ -12,7 +14,11 @@ public class VersonifyTests {
             PNQF]1.2.3.5
             PN3D]123
             PNF4]1.2.3.4-beta
-            """);
+            """;
+        if (!legacy) {
+            output = output.Replace("PN", "P", StringComparison.Ordinal);
+        }
+        var result = VersonifyOutputParser.Parse(output);
 
         result.VersionLiteral.ShouldBe("1.2.3.4");
         result.ShortVersion.ShouldBe("1.2");
@@ -22,6 +28,8 @@ public class VersonifyTests {
         result.QueuedFull.ShouldBe("1.2.3.5");
         result.ThreeDigitNumeric.ShouldBe("123");
         result.FourDigit.ShouldBe("1.2.3.4-beta");
+        result.FoundMarkers.Count.ShouldBe(8);
+        result.FoundMarkers.ShouldContain("PFV]");
     }
 
     [Fact]
@@ -34,7 +42,7 @@ public class VersonifyTests {
 
     [Fact]
     public void VersonifyOutputParser_Parse_ShouldUseTheLastValueForRepeatedMarkers() {
-        var result = VersonifyOutputParser.Parse("PNFV]1.2.3.4\r\nPNFV]1.2.3.5");
+        var result = VersonifyOutputParser.Parse("PNFV]1.2.3.4\r\nPFV]1.2.3.5");
 
         result.VersionLiteral.ShouldBe("1.2.3.5");
     }
@@ -46,7 +54,7 @@ public class VersonifyTests {
         var exception = Should.Throw<InvalidOperationException>(() =>
             VersonifyTasks.ValidateVersionOutput(command, string.Empty, "No version marker"));
 
-        exception.Message.ShouldContain("did not return a PNFV] version value");
+        exception.Message.ShouldContain("did not return a PFV] or PNFV] version value");
         exception.Message.ShouldContain("No version marker");
     }
 
@@ -90,6 +98,9 @@ public class VersonifyTests {
             Release = "Bronte",
             MultiMatchFile = "match.txt",
             Debug = true,
+            NoOverride = true,
+            Digits = "0,1",
+            DigitGroup = "default",
             DryRun = true,
             PerformIncrement = true,
             AlwaysReturnZero = true,
@@ -99,7 +110,7 @@ public class VersonifyTests {
 
         string args = settings.GetArgsAsString201().ToStringAndClear();
 
-        args.ShouldBe("--command=Passive --version-source=2.0.0 --root=src --quick-value=quick --release=Bronte --min-match=match.txt -debug --dry-run --increment --no-error --trace=trace --output=azdo-nf");
+        args.ShouldBe("--command=passive --version-source=2.0.0 --root=src --quick-value=quick --release=Bronte --min-match=match.txt --debug --no-override --digits=0,1 --digit-group=default --dry-run --increment --no-error --trace=trace --output=azdo");
     }
 
     [Fact]
@@ -161,7 +172,7 @@ public class VersonifyTests {
 
         string args = settings.GetArgsAsString201().ToStringAndClear();
 
-        args.ShouldBe("--command=Passive --version-source=2.0.0 --root=src --output=con-nf");
+        args.ShouldBe("--command=passive --version-source=2.0.0 --root=src --output=con-pf");
     }
 
     [Fact]
@@ -171,19 +182,21 @@ public class VersonifyTests {
         settings.SetRelease();
 
         settings.GetArgsAsString201().ToStringAndClear()
-            .ShouldBe("--command=Passive --version-source= --root= --release --output=con-nf");
+            .ShouldBe("--command=passive --version-source= --root= --release --output=con-pf");
         settings.SetCommand(VersonifyCommand.Passive);
         settings.GetArgsAsString200().ToStringAndClear()
             .ShouldBe("-Command=Passive -v= -Root= -Release -O=con-nf");
     }
 
-    [Fact]
-    public void VersonifySettings_SetCommand_ShouldSupportUnknownCommand() {
+    [Theory]
+    [InlineData(false, "-Command")]
+    [InlineData(true, "--command")]
+    public void VersonifySettings_SetCommand_ShouldSupportUnknownCommand(bool usePosix, string expected) {
         var settings = new VersonifySettings();
 
-        settings.SetCommand(VersonifyCommand.Unknown);
+        settings.SetCommand(VersonifyCommand.Unknown, usePosix);
 
-        settings.Command.ShouldBe("-Command=Unknown");
+        settings.Command.ShouldBe($"{expected}=Unknown");
     }
 
     [Fact]
@@ -200,12 +213,91 @@ public class VersonifyTests {
     [InlineData(VersonifyCommand.Passive)]
     [InlineData(VersonifyCommand.CreateVersion)]
     [InlineData(VersonifyCommand.Override)]
-    public void VersonifySettings_SetCommand_ShouldSetCommandArgument(VersonifyCommand command) {
+    [InlineData(VersonifyCommand.Set)]
+    public void VersonifySettings_SetCommand_ShouldSetCommandArgument_IsLegacy(VersonifyCommand command) {
         var settings = new VersonifySettings();
 
         settings.SetCommand(command);
 
         settings.Command.ShouldBe($"-Command={command}");
+        settings.GetArgsAsString200().ToStringAndClear().ShouldStartWith($"-Command={command}");
+        settings.GetArgsString().ToStringAndClear().ShouldStartWith($"-Command={command}");
+    }
+    [Theory]
+    [InlineData(VersonifyCommand.UpdateFiles)]
+    [InlineData(VersonifyCommand.Passive)]
+    [InlineData(VersonifyCommand.CreateVersion)]
+    [InlineData(VersonifyCommand.Override)]
+    [InlineData(VersonifyCommand.Set)]
+    public void VersonifySettings_SetCommand_ShouldSetCommandArgument_Bronte(VersonifyCommand command) {
+        var settings = new VersonifySettings();
+
+        settings.SetCommand(command, useLongOption: true);
+
+        settings.Command.ShouldBe($"--command={command}");
+        settings.GetArgsAsString201().ToStringAndClear().ShouldStartWith(settings.Command);
+    }
+
+    [Theory]
+    [InlineData("con")]
+    [InlineData("con-pf")]
+    [InlineData("con-nf")]
+    [InlineData("jcon")]
+    [InlineData("env")]
+    [InlineData("azdo:BuildVersion")]
+    [InlineData("file:version.txt")]
+    public void VersonifySettings_GetArgsAsString201_ShouldPreserveOutputMode(string outputStyle) {
+        var settings = new VersonifySettings().SetOutputStyle(outputStyle);
+
+        settings.GetArgsAsString201().ToStringAndClear().ShouldEndWith($"--output={outputStyle}");
+        settings.GetArgsAsString201().ToStringAndClear().ShouldEndWith($"--output={outputStyle}");
+        settings.OutputStyle.ShouldBe(outputStyle);
+    }
+
+    [Fact]
+    public void VersonifySettings_GetArgsAsString201_ShouldQuotePathsWithSpaces() {
+        var settings = new VersonifySettings {
+            VersionPersistanceValue = @"C:\version stores\release.vstore",
+            Root = @"C:\source code",
+            MultiMatchFile = @"C:\source code\matches.txt"
+        };
+        settings.SetCommand(VersonifyCommand.UpdateFiles);
+
+        string args = settings.GetArgsAsString201().ToStringAndClear();
+
+        args.ShouldContain("--version-source=\"C:\\version stores\\release.vstore\"");
+        args.ShouldContain("--root=\"C:\\source code\"");
+        args.ShouldContain("--min-match=\"C:\\source code\\matches.txt\"");
+    }
+
+    [Fact]
+    public void VersonifySettings_GetArgsAsString201_ShouldIncludePreReleaseShortcut() {
+        var settings = new VersonifySettings().SetPreRelease(true);
+
+        settings.GetArgsAsString201().ToStringAndClear().ShouldContain(" --pre-release");
+    }
+
+    [Fact]
+    public void VersonifySettings_LegacyArguments_ShouldMapFusionOutputWithoutChangingSettings() {
+        var settings = new VersonifySettings().SetOutputStyle("con-pf");
+        settings.SetCommand(VersonifyCommand.Passive);
+
+        settings.GetArgsAsString200().ToStringAndClear().ShouldEndWith("-O=con-nf");
+        settings.GetArgsString().ToStringAndClear().ShouldEndWith("-O=con-nf");
+        settings.GetArgsAsString201().ToStringAndClear().ShouldEndWith("--output=con-pf");
+        settings.OutputStyle.ShouldBe("con-pf");
+    }
+
+    [Theory]
+    [InlineData(true, "")]
+    [InlineData(false, "default")]
+    public void VersonifySettings_LegacyArguments_ShouldRejectUnsupportedGroups(bool preRelease, string digitGroup) {
+        var settings = new VersonifySettings().SetPreRelease(preRelease).SetDigitGroup(digitGroup);
+
+        Should.Throw<InvalidOperationException>(() => settings.GetArgsAsString200())
+            .Message.ShouldContain("digit groups require compatibility level 201 or above");
+        Should.Throw<InvalidOperationException>(() => settings.GetArgsString())
+            .Message.ShouldContain("digit groups require compatibility level 201 or above");
     }
 
     [Fact]
@@ -234,6 +326,9 @@ public class VersonifyTests {
             .SetRelease("release")
             .SetVersionPersistanceValue("1.2.3")
             .SetQuickValue("+.+.+")
+            .SetDigits("*")
+            .SetDigitGroup("default")
+            .SetPreRelease(false)
             .SetFramework("net10.0");
 
         settings.MultiMatchFile.ShouldBe("autoversion.txt");
@@ -245,6 +340,9 @@ public class VersonifyTests {
         settings.Release.ShouldBe("release");
         settings.VersionPersistanceValue.ShouldBe("1.2.3");
         settings.QuickValue.ShouldBe("+.+.+");
+        settings.Digits.ShouldBe("*");
+        settings.DigitGroup.ShouldBe("default");
+        settings.PreRelease.ShouldBeFalse();
         settings.Framework.ShouldBe("net10.0");
     }
 }

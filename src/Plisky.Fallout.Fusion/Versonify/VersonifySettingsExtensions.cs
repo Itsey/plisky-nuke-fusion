@@ -2,6 +2,21 @@ namespace Plisky.Fallout.Fusion;
 
 public static partial class VersonifySettingsExtensions {
 
+    public static T SetDigits<T>(this T toolSettings, string digits) where T : VersonifySettings {
+        toolSettings.Digits = digits;
+        return toolSettings;
+    }
+
+    public static T SetDigitGroup<T>(this T toolSettings, string digitGroup) where T : VersonifySettings {
+        toolSettings.DigitGroup = digitGroup;
+        return toolSettings;
+    }
+
+    public static T SetPreRelease<T>(this T toolSettings, bool preRelease) where T : VersonifySettings {
+        toolSettings.PreRelease = preRelease;
+        return toolSettings;
+    }
+
     public static T SetZeroReturnCode<T>(this T toolSettings, bool shouldReturnZero) where T : VersonifySettings {
         toolSettings.AlwaysReturnZero = shouldReturnZero;
         return toolSettings;
