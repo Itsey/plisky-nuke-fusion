@@ -1,7 +1,9 @@
 ﻿Plisky.Fallout.Fusion Change Log. 
  
-⬆️V XXX-VERSION3-XXX -
+⬆️V XXX-VERSION3-XXX - Versonify Bronte support Release
 - 🐞 Fix - Wire in Versonify --release parameter 
+- 🐞 Fix - Map release settings to the supported Versonify CLI argument formats.
+- ✅ Feature - Add Versonify 2.0.1 arguments and output parsing support.
 
 V 1.0.0 - Fallout Migration Release.
  - ✅ Breaking Change - Renamed the package from Plisky.Nuke.Fusion to Plisky.Fallout.Fusion.
